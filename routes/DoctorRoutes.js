@@ -1,4 +1,5 @@
 const express = require('express');
+const authController = require('../controllers/authController');
 
 const {
   getDoctor,
@@ -15,6 +16,8 @@ const {
   updateDoctorValidator,
   deleteDoctorValidator,
 } = require('../utils/validators/DoctorValidator');
+
+
 
 // mergeParams: Allow us to access parameters on other routers
 // ex: We need to access categoryId from category router

@@ -4,8 +4,8 @@ const DoctorSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      trim: true,
-      unique: [true, 'SubCategory must be unique'],
+      //trim: true,
+      //unique: [true, 'SubCategory must be unique'],
       minlength: [2, 'To short Doctor name'],
       maxlength: [32, 'To long Doctor name'],
     },

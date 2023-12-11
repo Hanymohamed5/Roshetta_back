@@ -15,10 +15,7 @@ exports.createDoctorValidator = [
     .withMessage('Too short Doctor name')
     .isLength({ max: 32 })
     .withMessage('Too long Doctor name')
-    .custom((val, { req }) => {
-      req.body.slug = slugify(val);
-      return true;
-    }),
+    ,
   
   check('specilization')
   .notEmpty()

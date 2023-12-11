@@ -6,6 +6,8 @@ const User = require('../models/userModel')
 const dotenv = require('dotenv');
 dotenv.config({ path: 'config.env' });
 const factory = require('../controllers/handlersFactory');
+const createToken = require('../utils/createToken');
+const jwt = require('jsonwebtoken');
 
 // passport Google
 passport.use(new GooglePlusTokenStrategy({
@@ -60,10 +62,8 @@ passport.use(new facebookTokenStrategy({
             //email: profile.emails[0].value,
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
-        })
-
-        await newUser.save()
-
+        });
+        await newUser.save();
         done(null, newUser)
     } catch (error) {
         done(error, false)
