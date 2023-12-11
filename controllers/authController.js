@@ -6,14 +6,13 @@ const createToken = require('../utils/createToken');
 const asyncHandler = require('express-async-handler');
 const ApiError = require('../utils/apiError');
 
-const authGoogle = async (req, res, next) => {
-    const token = createToken(User._id);
-    return res.status(200).json({ success: true, token }) 
-}
+exports.authGoogle = asyncHandler(async(req, res, next) => {
+  return res.status(200).json({ success: true})
+})
 
-const authfacebook = async (req, res, next) => {
-    return res.status(200).json({ success: true})
-}
+exports.authfacebook = asyncHandler(async(req, res, next) => {
+  return res.status(200).json({ success: true})
+})
 
 const authapple = async (req, res, next) => {
     const token = createToken(User._id);
@@ -21,7 +20,7 @@ const authapple = async (req, res, next) => {
 }
 
 // @desc   make sure the user is logged in
-const protect = asyncHandler(async (req, res, next) => {
+exports.protect = asyncHandler(async (req, res, next) => {
     // 1) Check if token exist, if exist get
     let token;
     if (
@@ -40,20 +39,6 @@ const protect = asyncHandler(async (req, res, next) => {
     }
   
     // 2) Verify token (no change happens, expired token)
-    const decoded = jwt.verify(token, "secrethany");
-  
-    // 3) Check if user exists
-    const currentUser = await User.findById(decoded.userId);
-    if (!currentUser) {
-      return next(
-        new ApiError(
-          'The user that belong to this token does no longer exist',
-          401
-        )
-      );
-    }
-    req.user = currentUser;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     next();
   });
-
-module.exports = { authGoogle, authfacebook, authapple, protect }

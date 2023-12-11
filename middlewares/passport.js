@@ -30,7 +30,6 @@ passport.use(new GooglePlusTokenStrategy({
             name: profile.displayName,
             email: profile.emails[0].value,
         })
-
         await newUser.save()
 
         done(null, newUser)
@@ -63,8 +62,12 @@ passport.use(new facebookTokenStrategy({
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
         });
+        const token = jwt.sign({ id: newUser._id}, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRES_IN
+        });
         await newUser.save();
         done(null, newUser)
+        console.log(newUser,token);
     } catch (error) {
         done(error, false)
     }

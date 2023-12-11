@@ -31,7 +31,7 @@ router
     createDoctorValidator,
     createDoctor
   )
-  .get(getDoctors);
+  .get(authController.protect,getDoctors);
 router
   .route('/:id')
   .get(getDoctorValidator, getDoctor)
