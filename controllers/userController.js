@@ -1,8 +1,9 @@
 const slugify = require("slugify")
 const asyncHandler = require("express-async-handler")
 const ApiError = require("../utils/apiError")
-const ApiFeatures = require("../utils/apiFeatures");
+const ApiFeatures = require("../utils/apiFeatures")
 
+const factory = require('./handlersFactory');
 const Users = require("../models/userModel")
 
 // @desc    Update specific user
@@ -31,4 +32,9 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     }
     res.status(200).json({ data: user });
 });
-  
+
+// @desc    Get list of users
+// @route   GET /api/v1/users
+// @access  Public
+
+exports.getUsers = factory.getAll(Users)
