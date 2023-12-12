@@ -4,6 +4,8 @@ const asyncHandler = require('express-async-handler');
 const factory = require('./handlersFactory');
 const Doctor = require('../models/DoctorModel');
 const { uploadSingleImage } = require('../middlewares/uploadImageMiddleware');
+const ApiError = require('../utils/apiError');
+const ApiFeatures = require('../utils/apiFeatures.js');
 
 // Upload single image
 exports.uploadCategoryImage = uploadSingleImage('image');
@@ -25,7 +27,6 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 
   next();
 });
-
 
 // @desc    Get list of doctors
 // @route   GET /api/v1/doctors

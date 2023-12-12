@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const createToken = require('../utils/createToken');
 const asyncHandler = require('express-async-handler');
 const ApiError = require('../utils/apiError');
+const passport = require('../middlewares/passport');
 
 exports.authGoogle = asyncHandler(async(req, res, next) => {
   return res.status(200).json({ success: true})
@@ -14,10 +15,9 @@ exports.authfacebook = asyncHandler(async(req, res, next) => {
   return res.status(200).json({ success: true})
 })
 
-const authapple = async (req, res, next) => {
-    const token = createToken(User._id);
+exports.authapple = asyncHandler(async(req,res, next) => {
     return res.status(200).json({ success: true, token })
-}
+}) 
 
 // @desc   make sure the user is logged in
 exports.protect = asyncHandler(async (req, res, next) => {
