@@ -49,7 +49,7 @@ const ClinicSchema = new mongoose.Schema(
     doctors: {
       
     }
-  },
+  }
 );
 
 module.exports = mongoose.model('Clinic', ClinicSchema);
