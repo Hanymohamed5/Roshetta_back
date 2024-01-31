@@ -5,7 +5,7 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const ClinicSchema = new mongoose.Schema(
   {
-    //_id: Number,
+    _id: Number,
     name: {
       type: String,
       trim: true,
