@@ -43,7 +43,7 @@ exports.resizeClinicImages = asyncHandler(async (req, res, next) => {
             .resize(2000, 1333)
             .toFormat('jpeg')
             .jpeg({ quality: 95 })
-            .toFile(`uploads/clinics/${imageName}`);
+            .toFile(`uploads/clinicProfile/${imageName}`);
   
           // Save image into our db
           req.body.images.push(imageName);
