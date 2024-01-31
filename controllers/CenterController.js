@@ -26,7 +26,7 @@ exports.resizeCenterImages = asyncHandler(async (req, res, next) => {
       .resize(2000, 1333)
       .toFormat('jpeg')
       .jpeg({ quality: 95 })
-      .toFile(`uploads/centers/${imageCoverFileName}`);
+      .toFile(`uploads/centerProfile/${imageCoverFileName}`);
 
     // Save image into our db
     req.body.imageCover = imageCoverFileName;
