@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const sequencing = require("../config/sequencing");
 
 const userSchema = new mongoose.Schema(
     {
+        //_id: Number,
         provider: {
             type: String,
             enum: ['google', 'facebook', 'apple'],
@@ -71,10 +73,28 @@ const userSchema = new mongoose.Schema(
             }
         }
     },
-    {
-        timestamps: true,
-    }
 );
+
+/*userSchema.pre("save", function (next) {
+    let doc = this;
+    sequencing.getSequenceNextValue("user_id").
+    then(counter => {
+        //console.log("asdasd", counter);
+        if(!counter) {
+           sequencing.insertCounter("user_id")
+            .then(counter => {
+                doc._id = counter;
+                console.log(doc)
+                next();
+            })
+            .catch(error => next(error))
+        } else {
+            doc._id = counter;
+            next();
+        }
+    })
+    .catch(error => next(error))
+});*/
 
 const userModel = mongoose.model('User', userSchema);
 module.exports = userModel;

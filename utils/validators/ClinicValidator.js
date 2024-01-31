@@ -20,21 +20,23 @@ exports.createClinicValidator = [
       return true;
     }),
   
-  check('specilization')
-  .notEmpty()
-  .withMessage('specilization required')
-  .isLength({ min: 2 })
-  .withMessage('Too short specilization name')
-  .isLength({ max: 32 })
-  .withMessage('Too long specilization name'),
+    check('specilization')
+    .notEmpty()
+    .withMessage('specilization required')
+    .isNumeric()
+    .withMessage('specilization must be a number')
+    .isLength({ min: 1 })
+    .withMessage('Rating must be above or equal 1.0'),
 
-  check('location')
-  .notEmpty()
-  .withMessage('location required')
-  .isLength({ min: 2 })
-  .withMessage('Too short location')
-  .isLength({ max: 32 })
-  .withMessage('Too long location'),
+  check('city')
+        .notEmpty()
+        .withMessage('city required')
+        .isNumeric()
+        .withMessage('city must be a number')
+        .isLength({ min: 1 })
+        .withMessage('Too short city')
+        .isLength({ max: 32 })
+        .withMessage('Too long city'),
 
   check('ratingsAverage')
     .optional()

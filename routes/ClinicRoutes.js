@@ -1,4 +1,5 @@
 const express = require('express');
+const authController = require('../controllers/authController');
 
 const {
   getClinic,
@@ -6,8 +7,10 @@ const {
   getClinics,
   updateClinic,
   deleteClinic,
-  uploadCategoryImage,
-  resizeImage
+  //uploadCategoryImage,
+  //resizeImage,
+  uploadClinicImages,
+  resizeClinicImages
 } = require('../controllers/ClinicController');
 const {
   createClinicValidator,
@@ -23,18 +26,22 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/')
   .post(
-    uploadCategoryImage,
-    resizeImage,
+    //uploadCategoryImage,
+    //resizeImage,
+    uploadClinicImages,
+    resizeClinicImages,
     createClinicValidator,
     createClinic
   )
-  .get(getClinics)
+  .get(authController.protect,getClinics)
 router
   .route('/:id')
   .get(getClinicValidator, getClinic)
   .put(
-    uploadCategoryImage,
-    resizeImage,
+    //uploadCategoryImage,
+    //resizeImage,
+    //uploadClinicImages,
+    //resizeClinicImages,
     updateClinicValidator,
     updateClinic
   )

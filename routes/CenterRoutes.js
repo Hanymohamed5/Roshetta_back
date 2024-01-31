@@ -1,4 +1,5 @@
 const express = require('express');
+const authController = require('../controllers/authController');
 
 const {
   getCenter,
@@ -6,8 +7,10 @@ const {
   getCenters,
   updateCenter,
   deleteCenter,
-  uploadCategoryImage,
-  resizeImage
+  //uploadCategoryImage,
+  //resizeImage
+  uploadCenterImages,
+  resizeCenterImages
 } = require('../controllers/CenterController');
 const {
   createCenterValidator,
@@ -23,18 +26,20 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/')
   .post(
-    uploadCategoryImage,
-    resizeImage,
+    //uploadCategoryImage,
+    //resizeImage,
+    uploadCenterImages,
+    resizeCenterImages,
     createCenterValidator,
     createCenter
   )
-  .get(getCenters)
+  .get(authController.protect,getCenters)
 router
   .route('/:id')
   .get(getCenterValidator, getCenter)
   .put(
-    uploadCategoryImage,
-    resizeImage,
+    //uploadCategoryImage,
+    //resizeImage,
     updateCenterValidator,
     updateCenter
   )

@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
+const sequencing = require("../config/sequencing");
+
+const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const CenterSchema = new mongoose.Schema(
   {
+    _id: Number,
     name: {
       type: String,
       trim: true,
@@ -9,17 +13,17 @@ const CenterSchema = new mongoose.Schema(
       minlength: [2, 'To short Center name'],
       maxlength: [32, 'To long Center name'],
     },
-    slug: {
-      type: String,
-      lowercase: true,
-    },
-    location: {
-      type: String,
+    specilization: {
+      type: [Number],
       trim: true,
-      minlength: [2, 'To short Center name'],
-      maxlength: [32, 'To long Center name'],
-    },
-    image: String,
+  },
+  city: {
+      type: [Number],
+      trim: true,
+      minlength: [2, 'To short city name'],
+      maxlength: [32, 'To long city name'],
+  },
+    //image: String,
     price: {
       type: Number,
       required: [true, 'Product price is required'],
@@ -34,17 +38,42 @@ const CenterSchema = new mongoose.Schema(
     },
     ratingsQuantity: {
       type: Number,
-      default: 0,
+      //default: 0,
     },
     review: {
       type: String,
       trim: true
     },
+    imageCover: {
+      type: String,
+      //required: [true, 'Product Image cover is required'],
+    },
+    images: [String],
     doctors: {
       
     }
   },
-  { timestamps: true }
 );
+
+CenterSchema.pre("save", function (next) {
+  let doc = this;
+  sequencing.getSequenceNextValue("Center_id").
+  then(counter => {
+      //console.log("asdasd", counter);
+      if(!counter) {
+         sequencing.insertCounter("Center_id")
+          .then(counter => {
+              doc._id = counter;
+              console.log(doc)
+              next();
+          })
+          .catch(error => next(error))
+      } else {
+          doc._id = counter;
+          next();
+      }
+  })
+  .catch(error => next(error))
+});
 
 module.exports = mongoose.model('Center', CenterSchema);

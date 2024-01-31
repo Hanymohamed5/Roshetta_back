@@ -4,27 +4,55 @@ const asyncHandler = require('express-async-handler');
 const factory = require('./handlersFactory');
 const Clinic = require('../models/clinicModel');
 const { uploadSingleImage } = require('../middlewares/uploadImageMiddleware');
+const { uploadMixOfImages } = require('../middlewares/uploadImageMiddleware');
 
-// Upload single image
-exports.uploadCategoryImage = uploadSingleImage('image');
+exports.uploadClinicImages = uploadMixOfImages([
+  {
+    name: 'imageCover',
+    maxCount: 1,
+  },
+  {
+    name: 'images',
+    maxCount: 10,
+  },
+]);
 
-// Image processing
-exports.resizeImage = asyncHandler(async (req, res, next) => {
-  const filename = `clinic-${uuidv4()}-${Date.now()}.jpeg`;
+exports.resizeClinicImages = asyncHandler(async (req, res, next) => {
+  // console.log(req.files);
+  //1- Image processing for imageCover
+  if (req.files.imageCover) {
+    const imageCoverFileName = `clinic-${uuidv4()}-${Date.now()}-cover.jpeg`;
 
-  if (req.file) {
-    await sharp(req.file.buffer)
-      .resize(600, 600)
+    await sharp(req.files.imageCover[0].buffer)
+      .resize(2000, 1333)
       .toFormat('jpeg')
       .jpeg({ quality: 95 })
-      .toFile(`uploads/clinics/${filename}`);
+      .toFile(`uploads/clinics/${imageCoverFileName}`);
 
     // Save image into our db
-    req.body.image = filename;
+    req.body.imageCover = imageCoverFileName;
   }
-
-  next();
-});
+    //2- Image processing for images
+    if (req.files.images) {
+      req.body.images = [];
+      await Promise.all(
+        req.files.images.map(async (img, index) => {
+          const imageName = `clinic-${uuidv4()}-${Date.now()}-${index + 1}.jpeg`;
+  
+          await sharp(img.buffer)
+            .resize(2000, 1333)
+            .toFormat('jpeg')
+            .jpeg({ quality: 95 })
+            .toFile(`uploads/clinics/${imageName}`);
+  
+          // Save image into our db
+          req.body.images.push(imageName);
+        })
+      );
+  
+      next();
+    }
+  });
 
 
 // @desc    Get list of clinics
@@ -51,3 +79,4 @@ exports.updateClinic = factory.updateOne(Clinic);
 // @route   DELETE /api/v1/clinics/:id
 // @access  Private
 exports.deleteClinic = factory.deleteOne(Clinic);
+
