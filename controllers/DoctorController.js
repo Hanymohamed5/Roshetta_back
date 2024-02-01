@@ -43,10 +43,12 @@ exports.getDoctor = factory.getOne(Doctor);
 // @access  Private
 exports.createDoctor = factory.createOne(Doctor);
 
+
 // @desc    Update specific doctor
 // @route   PUT /api/v1/doctors/:id
 // @access  Private
 exports.updateDoctor = factory.updateOne(Doctor);
+
 
 // @desc    Delete specific doctor
 // @route   DELETE /api/v1/doctors/:id

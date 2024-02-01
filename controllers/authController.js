@@ -30,12 +30,9 @@ exports.protect = asyncHandler(async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
     }
     if (!token) {
-      return next(
-        new ApiError(
-          'You are not login, Please login to get access this route',
-          401
-        )
-      );
+      res.status(401).json({
+        message: 'You are not login, Please login to get access this route'
+      })
     }
   
     // 2) Verify token (no change happens, expired token)
@@ -44,12 +41,9 @@ exports.protect = asyncHandler(async (req, res, next) => {
     // 3) Check if user exists
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
-    return next(
-      new ApiError(
-        'The user that belong to this token does no longer exist',
-        401
-      )
-    );
+    res.status(401).json({
+      message: 'The user that belong to this token does no longer exist'
+    });
   }
     next();
   });

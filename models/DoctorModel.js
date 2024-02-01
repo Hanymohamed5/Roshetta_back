@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 const sequencing = require("../config/sequencing");
-const { NONAME } = require('dns');
 
 //const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const DoctorSchema = new mongoose.Schema({
-    _id: Number
-    ,name: {
+    _id: Number,
+    name: {
         type: String,
         trim: true,
         minlength: [2, 'To short doctor name'],
