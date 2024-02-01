@@ -8,15 +8,54 @@ const ApiError = require('../utils/apiError');
 const passport = require('../middlewares/passport');
 
 exports.authGoogle = asyncHandler(async(req, res, next) => {
-  return res.status(200).json({ success: true})
+  const user = req.user;
+
+  // Get or create a new token for the user
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+      token
+    }
+  })
 })
 
 exports.authfacebook = asyncHandler(async(req, res, next) => {
-  return res.status(200).json({ success: true})
+  const user = req.user;
+
+  // Get or create a new token for the user
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+      token
+    }
+  })
 })
 
 exports.authapple = asyncHandler(async(req,res, next) => {
-    return res.status(200).json({ success: true, token })
+  const user = req.user;
+
+  // Get or create a new token for the user
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+      token
+    }
+  })
 }) 
 
 // @desc   make sure the user is logged in
