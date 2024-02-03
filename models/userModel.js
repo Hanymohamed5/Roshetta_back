@@ -4,22 +4,9 @@ const sequencing = require("../config/sequencing");
 const userSchema = new mongoose.Schema(
     {
         //_id: Number,
-        provider: {
+         name: {
             type: String,
-            enum: ['google', 'facebook', 'apple'],
-            default: 'normal'
-        },
-        isOnline: {
-            type: Boolean,
-            default: false
-        },
-        googleId: {
-            type: String,
-            unique: true,
-        }
-        , name: {
-            type: String,
-            required: true,
+            //required: true,
         },
         email: {
             type: String,
@@ -33,44 +20,22 @@ const userSchema = new mongoose.Schema(
             unique:true,
             default:null
         },*/
-        /*password:{
-            type:String,
-            required:true,
-        },*/
-        firstName: {
+        image: {
             type: String
         },
-        lastName: {
-            type: String
-        },
-        isAdmin: {
-            type: Boolean,
-            default: false
-        },
-        role: {
-            type: String,
-            required: true,
-            default: "user"
-        },
-        profilePic: {
-            type: String
-        },
-        facebookId: {
-            type: String,
-        },
-        // appleId: {
-        //   type: String,
-        // },
         MedicalHistory: {
             gender: Number,
-            birthDat: Date,
-            weight: Number,
+            dateOfBirth : String,
+            country_id : Number,
+            city_id : Number,
             height: Number,
-            medicine: String,
-            healthProblem: {
-                mainProblem: String,
-                subProblem: String
-            }
+            weight: Number,
+            isExerciseAvilable : Boolean,
+            exerciseType : Number,
+            isAnyHealthProblem : Boolean,
+            medicine: [String],
+            isPregnant : Boolean,
+            isSmoker : Boolean
         }
     },
 );

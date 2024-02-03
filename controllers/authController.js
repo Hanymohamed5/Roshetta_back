@@ -18,8 +18,8 @@ exports.authGoogle = asyncHandler(async(req, res, next) => {
   return res.status(200).json({
     status: 'success',
     data: {
-      user,
-      token
+      token,
+      user
     }
   })
 })
