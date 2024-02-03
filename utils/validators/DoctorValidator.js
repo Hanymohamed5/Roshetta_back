@@ -19,15 +19,13 @@ exports.createDoctorValidator = [
     check('specilization')
         .notEmpty()
         .withMessage('specilization required')
-        .isNumeric()
         .withMessage('specilization must be a number')
         .isLength({ min: 1 })
         .withMessage('Rating must be above or equal 1.0'),
 
-    check('city')
+    check('location')
         .notEmpty()
         .withMessage('city required')
-        .isNumeric()
         .withMessage('city must be a number')
         .isLength({ min: 1 })
         .withMessage('Too short city')

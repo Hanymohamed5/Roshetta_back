@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 const sequencing = require("../config/sequencing");
 
-const autoIncrement = require('mongoose-sequence')(mongoose);
+//const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const ClinicSchema = new mongoose.Schema(
   {
-    _id: Number,
+    //_id: Number,
+    logo: {
+      type: String,
+      //required: [true, 'Product Image cover is required'],
+    },
     name: {
       type: String,
       trim: true,
@@ -13,49 +17,45 @@ const ClinicSchema = new mongoose.Schema(
       minlength: [2, 'To short Clinic name'],
       maxlength: [32, 'To long Clinic name'],
     },
+    rateAvg : {
+      type: Number,
+      default: 4.5,
+      min: [1, 'Rating must be above 1.0'],
+      max: [5, 'Rating must be below 5.0'],
+      set: val => Math.round(val * 10) / 10 // 4.666666, 46.6666, 47, 4.7
+  },
+  clinicPhotos: [String],
     specilization: {
-      type: [Number],
+      type: Number,
       trim: true,
   },
-  city: {
-      type: [Number],
+  price: {
+    type: Number,
+    required: [true, 'Product price is required'],
+    trim: true,
+    max: [200000, 'Too long product price'],
+  },
+  location: {
+      type: String,
       trim: true,
       minlength: [2, 'To short city name'],
       maxlength: [32, 'To long city name'],
   },
-    //image: String,
-    price: {
-      type: Number,
-      required: [true, 'Product price is required'],
-      trim: true,
-      max: [200000, 'Too long product price'],
-    },
-    ratingsAverage: {
-      type: Number,
-      min: [1, 'Rating must be above or equal 1.0'],
-      max: [5, 'Rating must be below or equal 5.0'],
-      // set: (val) => Math.round(val * 10) / 10, // 3.3333 * 10 => 33.333 => 33 => 3.3
-    },
-    ratingsQuantity: {
-      type: Number,
-      //default: 0,
-    },
-    review: {
-      type: String,
+  isfavourite: {
+    type: Boolean,
+    default: false,
+},
+    doctor: { 
+
+  },
+    reviews: {
+      type: [Object],
       trim: true
     },
-    imageCover: {
-      type: String,
-      //required: [true, 'Product Image cover is required'],
-    },
-    images: [String],
-    doctors: {
-      
-    }
     });
 //ClinicSchema.plugin(autoIncrement);
 //ClinicSchema.plugin(autoIncrement, { id: '_id', inc_field: 'clinic_counter' });
-ClinicSchema.pre("save", function (next) {
+/*ClinicSchema.pre("save", function (next) {
   let doc = this;
   sequencing.getSequenceNextValue("Clinic_id").
   then(counter => {
@@ -74,6 +74,6 @@ ClinicSchema.pre("save", function (next) {
       }
   })
   .catch(error => next(error))
-});
+});*/
 
 module.exports = mongoose.model('Clinic', ClinicSchema);

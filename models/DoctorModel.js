@@ -4,7 +4,8 @@ const sequencing = require("../config/sequencing");
 //const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const DoctorSchema = new mongoose.Schema({
-    _id: Number,
+    //_id: Number,
+    image: String,
     name: {
         type: String,
         trim: true,
@@ -12,14 +13,18 @@ const DoctorSchema = new mongoose.Schema({
         maxlength: [32, 'To long doctor name'],
     },
     specilization: {
-        type: [Number],
+        type: Number,
         trim: true,
     },
-    city: {
-        type: [Number],
-        trim: true,
-        minlength: [2, 'To short city name'],
-        maxlength: [32, 'To long city name'],
+    rateAvg : {
+        type: Number,
+        default: 4.5,
+        min: [1, 'Rating must be above 1.0'],
+        max: [5, 'Rating must be below 5.0'],
+        set: val => Math.round(val * 10) / 10 // 4.666666, 46.6666, 47, 4.7
+    },
+    bio: {
+        type: String,
     },
     price: {
         type: Number,
@@ -27,19 +32,33 @@ const DoctorSchema = new mongoose.Schema({
         required: [true, "price is required"],
         max: [200000, "to long price"]
     },
+    location: {
+        type: String,
+        trim: true,
+        minlength: [2, 'To short city name'],
+        maxlength: [32, 'To long city name'],
+    },
     isfavourite: {
         type: Boolean,
         default: false,
     },
-    aboutDoctor: {
-        type: String,
+    isOnline : {
+        type : Boolean,
+        default : false
     },
-    image: String,
-    clinic: String,
+    clinics: {
+        type: [Object]
+    },
+    medicalCenter: {
+        type: [Object]
+    },
+    reviews: {
+        type: [Object]
+    }
 });
 //DoctorSchema.plugin(autoIncrement);
 
- DoctorSchema.pre("save", function (next) {
+ /*DoctorSchema.pre("save", function (next) {
      let doc = this;
      sequencing.getSequenceNextValue("Doctor_id").
      then(counter => {
@@ -57,6 +76,6 @@ const DoctorSchema = new mongoose.Schema({
          }
      })
      .catch(error => next(error))
- });
+ });*/
 
 module.exports = mongoose.model('Doctor', DoctorSchema);

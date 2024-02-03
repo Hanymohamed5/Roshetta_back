@@ -3,7 +3,29 @@ const { v4: uuidv4 } = require('uuid');
 const asyncHandler = require('express-async-handler');
 const factory = require('./handlersFactory');
 const Center = require('../models/centerModel');
+const { uploadSingleImage } = require('../middlewares/uploadImageMiddleware');
 const { uploadMixOfImages } = require('../middlewares/uploadImageMiddleware');
+
+// Upload single image
+/*exports.uploadLogoImage = uploadSingleImage('logo');
+
+// Image processing
+exports.resizeImage = asyncHandler(async (req, res, next) => {
+  const filename = `logo-${uuidv4()}-${Date.now()}.jpeg`;
+
+  if (req.file) {
+    await sharp(req.file.buffer)
+      .resize(600, 600)
+      .toFormat('jpeg')
+      .jpeg({ quality: 95 })
+      .toFile(`uploads/logo/${filename}`);
+
+    // Save image into our db
+    req.body.logo = filename;
+  }
+
+  next();
+});*/
 
 exports.uploadCenterImages = uploadMixOfImages([
   {
@@ -11,7 +33,7 @@ exports.uploadCenterImages = uploadMixOfImages([
     maxCount: 1,
   },
   {
-    name: 'images',
+    name: 'centerPhotos',
     maxCount: 10,
   },
 ]);
@@ -32,10 +54,10 @@ exports.resizeCenterImages = asyncHandler(async (req, res, next) => {
     req.body.imageCover = imageCoverFileName;
   }
     //2- Image processing for images
-    if (req.files.images) {
-      req.body.images = [];
+    if (req.files.centerPhotos) {
+      req.body.centerPhotos = [];
       await Promise.all(
-        req.files.images.map(async (img, index) => {
+        req.files.centerPhotos.map(async (img, index) => {
           const imageName = `center-${uuidv4()}-${Date.now()}-${index + 1}.jpeg`;
   
           await sharp(img.buffer)
@@ -45,7 +67,7 @@ exports.resizeCenterImages = asyncHandler(async (req, res, next) => {
             .toFile(`uploads/centerProfile/${imageName}`);
   
           // Save image into our db
-          req.body.images.push(imageName);
+          req.body.centerPhotos.push(imageName);
         })
       );
   

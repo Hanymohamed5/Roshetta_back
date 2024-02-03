@@ -15,10 +15,7 @@ exports.createClinicValidator = [
     .withMessage('Too short Clinic name')
     .isLength({ max: 32 })
     .withMessage('Too long Clinic name')
-    .custom((val, { req }) => {
-      req.body.slug = slugify(val);
-      return true;
-    }),
+    ,
   
     check('specilization')
     .notEmpty()
@@ -28,17 +25,16 @@ exports.createClinicValidator = [
     .isLength({ min: 1 })
     .withMessage('Rating must be above or equal 1.0'),
 
-  check('city')
+  check('location')
         .notEmpty()
         .withMessage('city required')
-        .isNumeric()
         .withMessage('city must be a number')
         .isLength({ min: 1 })
         .withMessage('Too short city')
         .isLength({ max: 32 })
         .withMessage('Too long city'),
 
-  check('ratingsAverage')
+  check(' rateAvg')
     .optional()
     .isNumeric()
     .withMessage('ratingsAverage must be a number')
@@ -46,10 +42,6 @@ exports.createClinicValidator = [
     .withMessage('Rating must be above or equal 1.0')
     .isLength({ max: 5 })
     .withMessage('Rating must be below or equal 5.0'),
-  check('ratingsQuantity')
-    .optional()
-    .isNumeric()
-    .withMessage('ratingsQuantity must be a number'),
 
     check('price')
     .notEmpty()
@@ -64,10 +56,6 @@ exports.createClinicValidator = [
 
 exports.updateClinicValidator = [
   check('id').isMongoId().withMessage('Invalid clinic id format'),
-  body('name').custom((val, { req }) => {
-    req.body.slug = slugify(val);
-    return true;
-  }),
   validatorMiddleware,
 ];
 

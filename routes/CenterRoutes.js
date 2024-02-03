@@ -7,8 +7,8 @@ const {
   getCenters,
   updateCenter,
   deleteCenter,
-  //uploadCategoryImage,
-  //resizeImage
+  //uploadLogoImage,
+  //resizeImage,
   uploadCenterImages,
   resizeCenterImages
 } = require('../controllers/CenterController');
@@ -26,7 +26,7 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/')
   .post(
-    //uploadCategoryImage,
+    //uploadLogoImage,
     //resizeImage,
     uploadCenterImages,
     resizeCenterImages,

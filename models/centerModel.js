@@ -1,11 +1,18 @@
 const mongoose = require('mongoose');
 const sequencing = require("../config/sequencing");
 
-const autoIncrement = require('mongoose-sequence')(mongoose);
+//const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const CenterSchema = new mongoose.Schema(
   {
-    _id: Number,
+    //_id: Number,
+    logo: {
+      type: String
+    },
+    imageCover: {
+      type: String,
+      //required: [true, 'Product Image cover is required'],
+    },
     name: {
       type: String,
       trim: true,
@@ -13,49 +20,44 @@ const CenterSchema = new mongoose.Schema(
       minlength: [2, 'To short Center name'],
       maxlength: [32, 'To long Center name'],
     },
+    rateAvg : {
+      type: Number,
+      default: 4.5,
+      min: [1, 'Rating must be above 1.0'],
+      max: [5, 'Rating must be below 5.0'],
+      set: val => Math.round(val * 10) / 10 // 4.666666, 46.6666, 47, 4.7
+  },
+  centerPhotos: [String],
     specilization: {
       type: [Number],
       trim: true,
   },
-  city: {
-      type: [Number],
+  price: {
+    type: Number,
+    required: [true, 'Product price is required'],
+    trim: true,
+    max: [200000, 'Too long product price'],
+  },
+  location: {
+      type: String,
       trim: true,
       minlength: [2, 'To short city name'],
       maxlength: [32, 'To long city name'],
   },
-    //image: String,
-    price: {
-      type: Number,
-      required: [true, 'Product price is required'],
-      trim: true,
-      max: [200000, 'Too long product price'],
+  isfavourite: {
+    type: Boolean,
+    default: false,
+},
+  doctors: {
+    type: [Object]
+  },
+    reviews: {
+      type: [Object],
     },
-    ratingsAverage: {
-      type: Number,
-      min: [1, 'Rating must be above or equal 1.0'],
-      max: [5, 'Rating must be below or equal 5.0'],
-      // set: (val) => Math.round(val * 10) / 10, // 3.3333 * 10 => 33.333 => 33 => 3.3
-    },
-    ratingsQuantity: {
-      type: Number,
-      //default: 0,
-    },
-    review: {
-      type: String,
-      trim: true
-    },
-    imageCover: {
-      type: String,
-      //required: [true, 'Product Image cover is required'],
-    },
-    images: [String],
-    doctors: {
-      
-    }
   },
 );
 
-CenterSchema.pre("save", function (next) {
+/*CenterSchema.pre("save", function (next) {
   let doc = this;
   sequencing.getSequenceNextValue("Center_id").
   then(counter => {
@@ -74,6 +76,6 @@ CenterSchema.pre("save", function (next) {
       }
   })
   .catch(error => next(error))
-});
+});*/
 
 module.exports = mongoose.model('Center', CenterSchema);

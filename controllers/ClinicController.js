@@ -8,11 +8,11 @@ const { uploadMixOfImages } = require('../middlewares/uploadImageMiddleware');
 
 exports.uploadClinicImages = uploadMixOfImages([
   {
-    name: 'imageCover',
+    name: 'logo',
     maxCount: 1,
   },
   {
-    name: 'images',
+    name: 'clinicPhotos',
     maxCount: 10,
   },
 ]);
@@ -20,23 +20,23 @@ exports.uploadClinicImages = uploadMixOfImages([
 exports.resizeClinicImages = asyncHandler(async (req, res, next) => {
   // console.log(req.files);
   //1- Image processing for imageCover
-  if (req.files.imageCover) {
+  if (req.files.logo) {
     const imageCoverFileName = `clinic-${uuidv4()}-${Date.now()}-cover.jpeg`;
 
-    await sharp(req.files.imageCover[0].buffer)
+    await sharp(req.files.logo[0].buffer)
       .resize(2000, 1333)
       .toFormat('jpeg')
       .jpeg({ quality: 95 })
       .toFile(`uploads/clinics/${imageCoverFileName}`);
 
     // Save image into our db
-    req.body.imageCover = imageCoverFileName;
+    req.body.logo = imageCoverFileName;
   }
     //2- Image processing for images
-    if (req.files.images) {
-      req.body.images = [];
+    if (req.files.clinicPhotos) {
+      req.body.clinicPhotos = [];
       await Promise.all(
-        req.files.images.map(async (img, index) => {
+        req.files.clinicPhotos.map(async (img, index) => {
           const imageName = `clinic-${uuidv4()}-${Date.now()}-${index + 1}.jpeg`;
   
           await sharp(img.buffer)
@@ -46,7 +46,7 @@ exports.resizeClinicImages = asyncHandler(async (req, res, next) => {
             .toFile(`uploads/clinicProfile/${imageName}`);
   
           // Save image into our db
-          req.body.images.push(imageName);
+          req.body.clinicPhotos.push(imageName);
         })
       );
   
