@@ -24,19 +24,26 @@ const userSchema = new mongoose.Schema(
             type: String
         },
         MedicalHistory: {
-            gender: Number,
-            dateOfBirth : String,
-            country_id : Number,
-            city_id : Number,
-            height: Number,
-            weight: Number,
-            isExerciseAvilable : Boolean,
-            exerciseType : Number,
-            isAnyHealthProblem : Boolean,
-            medicine: [String],
-            isPregnant : Boolean,
-            isSmoker : Boolean
-        }
+            type: {
+                gender: Number,
+                dateOfBirth: String,
+                country_id: Number,
+                city_id: Number,
+                height: Number,
+                weight: Number,
+                isExerciseAvilable: Boolean,
+                exerciseType: Number,
+                isAnyHealthProblem: Boolean,
+                medicine: [String],
+                isPregnant: Boolean,
+                isSmoker: Boolean
+            },
+            default: null
+        },
+        /*googleId: {
+            type: String,
+            unique: true,
+        }*/
     },
 );
 

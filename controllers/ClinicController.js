@@ -63,7 +63,11 @@ exports.getClinics = factory.getAll(Clinic);
 // @desc    Get specific doctor by id
 // @route   GET /api/v1/clinics/:id
 // @access  Public
-exports.getClinic = factory.getOne(Clinic);
+exports.getClinic = factory.getOne(
+  Clinic,
+  { path: 'doctors', populate: { path: 'reviews' } },
+  { path: 'reviews' }
+);
 
 // @desc    Create clinic
 // @route   POST  /api/v1/clinics

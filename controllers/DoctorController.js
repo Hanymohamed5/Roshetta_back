@@ -36,7 +36,7 @@ exports.getDoctors = factory.getAll(Doctor);
 // @desc    Get specific doctor by id
 // @route   GET /api/v1/doctors/:id
 // @access  Public
-exports.getDoctor = factory.getOne(Doctor);
+exports.getDoctor = factory.getOne(Doctor, "reviews");
 
 // @desc    Create doctor
 // @route   POST  /api/v1/doctors

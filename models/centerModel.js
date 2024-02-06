@@ -48,14 +48,25 @@ const CenterSchema = new mongoose.Schema(
     type: Boolean,
     default: false,
 },
-  doctors: {
-    type: [Object]
   },
-    reviews: {
-      type: [Object],
-    },
-  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
 );
+
+CenterSchema.virtual("doctors", {
+  ref: "Doctor",
+  foreignField: "center",
+  localField: "_id"
+}
+);
+
+CenterSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'center',
+  localField: '_id',
+});
 
 /*CenterSchema.pre("save", function (next) {
   let doc = this;

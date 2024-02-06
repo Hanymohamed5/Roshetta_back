@@ -45,13 +45,23 @@ const ClinicSchema = new mongoose.Schema(
     type: Boolean,
     default: false,
 },
-    doctor: { 
-
-  },
-    reviews: {
-      type: [Object],
-      trim: true
     },
+    {
+      toJSON: { virtuals: true },
+      toObject: { virtuals: true }
+    }
+    );
+
+    ClinicSchema.virtual("doctors", {
+      ref: "Doctor",
+      foreignField: "clinic",
+      localField: "_id"
+    }
+    );
+    ClinicSchema.virtual('reviews', {
+      ref: 'Review',
+      foreignField: 'clinic',
+      localField: '_id',
     });
 //ClinicSchema.plugin(autoIncrement);
 //ClinicSchema.plugin(autoIncrement, { id: '_id', inc_field: 'clinic_counter' });

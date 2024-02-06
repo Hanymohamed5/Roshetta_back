@@ -84,7 +84,10 @@ exports.getCenters = factory.getAll(Center);
 // @desc    Get specific center by id
 // @route   GET /api/v1/centers/:id
 // @access  Public
-exports.getCenter = factory.getOne(Center);
+exports.getCenter = factory.getOne(Center,
+  { path: 'doctors', populate: { path: 'reviews' } },
+  { path: 'reviews' }
+  );
 
 // @desc    Create center
 // @route   POST  /api/v1/centers

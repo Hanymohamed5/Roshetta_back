@@ -46,16 +46,42 @@ const DoctorSchema = new mongoose.Schema({
         type : Boolean,
         default : false
     },
-    clinics: {
-        type: [Object]
+    // parent referance 
+    clinic: {
+        type: mongoose.Schema.ObjectId,
+        ref: "Clinic",
+        //required: [true, "Doctor must belong to clinic"]
     },
-    medicalCenter: {
-        type: [Object]
+
+    // parent referance 
+    center: {
+        type: mongoose.Schema.ObjectId,
+        ref: "Center",
+        //required: [true, "Doctor must belong to center"]
     },
-    reviews: {
-        type: [Object]
-    }
+},
+{
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
+);
+
+DoctorSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'doctor',
+    localField: '_id',
+  });
+
+  DoctorSchema.pre(/^find/, function (next) {
+    this.populate({ path: "clinic"})
+    next();
 });
+
+DoctorSchema.pre(/^find/, function (next) {
+    this.populate({ path: "center"})
+    next();
+});
+
 //DoctorSchema.plugin(autoIncrement);
 
  /*DoctorSchema.pre("save", function (next) {

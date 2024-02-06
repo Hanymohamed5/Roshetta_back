@@ -15,7 +15,8 @@ const clinicRoute = require('./routes/ClinicRoutes');
 const centerRoute = require('./routes/CenterRoutes');
 const userRoute = require("./routes/userRoute");
 const notificationRouter = require('./controllers/notification-controller')
-const { fireNotification } = require('./controllers/notification-controller')
+const { fireNotification } = require('./controllers/notification-controller');
+const reviewRoute = require('./routes/reviewRoutes');
 
 
 // connect with db
@@ -57,6 +58,7 @@ app.use('/api/v1/auth', AuthRoute);
 app.use('/api/v1/doctors', doctorRoute);
 app.use('/api/v1/clinics', clinicRoute);
 app.use('/api/v1/centers', centerRoute);
+app.use('/api/v1/reviews', reviewRoute);
 app.use('/', notificationRouter);
 app.get("/", fireNotification);
 
