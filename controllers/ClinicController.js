@@ -66,7 +66,6 @@ exports.getClinics = factory.getAll(Clinic);
 exports.getClinic = factory.getOne(
   Clinic,
   { path: 'doctors', populate: { path: 'reviews' } },
-  { path: 'reviews' }
 );
 
 // @desc    Create clinic
