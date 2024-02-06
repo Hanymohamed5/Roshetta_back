@@ -10,8 +10,19 @@ const passport = require('../middlewares/passport');
 exports.authGoogle = asyncHandler(async(req, res, next) => {
   const user = req.user;
 
+  // Check if the user exists in the database
+  let existingUser = await User.findOne({ googleId: user.googleId });
+
+  if (!existingUser) {
+    // If the user doesn't exist, save it in the database
+    existingUser = await User.create({
+      googleId: user.googleId,
+      // Add other properties from req.user if needed
+    });
+  }
+
   // Get or create a new token for the user
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
@@ -19,10 +30,10 @@ exports.authGoogle = asyncHandler(async(req, res, next) => {
     status: 'success',
     data: {
       token,
-      user
+      user: existingUser
     }
-  })
-})
+  });
+});
 
 exports.authfacebook = asyncHandler(async(req, res, next) => {
   const user = req.user;
