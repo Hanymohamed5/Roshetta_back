@@ -45,6 +45,24 @@ const userSchema = new mongoose.Schema(
             unique: true,
         }*/
     },
+    {
+        toJSON: { 
+          virtuals: true,
+          transform: (doc, ret) => {
+            ret.id = ret._id;
+            delete ret._id;
+            delete ret.__v;
+
+            // Exclude id and _id from MedicalHistory
+        if (ret.MedicalHistory) {
+            ret.MedicalHistory.id = ret.MedicalHistory._id;
+            delete ret.MedicalHistory._id;
+            delete ret.MedicalHistory.id;
+          }
+          }
+        },
+        toObject: { virtuals: true }
+      }
 );
 
 /*userSchema.pre("save", function (next) {

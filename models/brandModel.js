@@ -4,7 +4,17 @@ const brandSchema = new mongoose.Schema(
   {
     image: String,
   },
-  { timestamps: true }
+  {
+    toJSON: { 
+      virtuals: true,
+      transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+      }
+    },
+    toObject: { virtuals: true }
+  }
 );
 
 const setImageURL = (doc) => {
