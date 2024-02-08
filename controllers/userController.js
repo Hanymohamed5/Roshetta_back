@@ -6,6 +6,7 @@ const ApiFeatures = require("../utils/apiFeatures")
 const { uploadSingleImage } = require('../middlewares/uploadImageMiddleware');
 const factory = require('./handlersFactory');
 const Users = require("../models/userModel");
+const jwt = require('jsonwebtoken');
 
 // Upload single image
 exports.uploadUserImage = uploadSingleImage('image');
@@ -30,9 +31,47 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 
 
 // @desc    Update specific user
-// @route   PUT /api/v1/users/:id
+// @route   PUT /api/v1/users/update
 // @access  Private
-exports.updateUser = factory.updateOne(Users);
+exports.updateUser = asyncHandler(async (req, res, next) => {
+  // Get user information from the token
+  const token = req.headers.authorization.split(' ')[1]; // Assuming the token is included in the Authorization header
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  // Check if the user ID from the token matches the user ID in the request body
+  if (decoded.id !== req.params.id) {
+    res.status(401).json({
+      message: 'Unauthorized to update this user'
+    });
+  }
+
+  // Update the user based on the decoded user ID
+  const updatedUser = await Users.findByIdAndUpdate(decoded.id, req.body, {
+    new: true,
+    runValidators: true,
+  }
+  ).select('-googleId');
+
+  if (!updatedUser) {
+    return next(new ApiError('User not found', 404));
+  }
+
+  // Get a new token for the updated user
+  const newToken = jwt.sign({ id: updatedUser._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      token: newToken,
+      user: updatedUser,
+    },
+  });
+});
+
+
+
 
 // @desc    Get list of users
 // @route   GET /api/v1/users

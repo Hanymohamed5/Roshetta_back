@@ -17,13 +17,11 @@ const ClinicSchema = new mongoose.Schema(
       minlength: [2, 'To short Clinic name'],
       maxlength: [32, 'To long Clinic name'],
     },
-    rateAvg : {
+    ratingsAverage: {
       type: Number,
-      default: 4.5,
-      min: [1, 'Rating must be above 1.0'],
-      max: [5, 'Rating must be below 5.0'],
-      set: val => Math.round(val * 10) / 10 // 4.666666, 46.6666, 47, 4.7
-  },
+      min: [1, 'Rating must be above or equal 1.0'],
+      max: [5, 'Rating must be below or equal 5.0'],
+    },
   clinicPhotos: [String],
     specilization: {
       type: Number,

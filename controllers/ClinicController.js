@@ -63,7 +63,7 @@ exports.getClinics = factory.getAll(Clinic);
 // @desc    Get specific doctor by id
 // @route   GET /api/v1/clinics/:id
 // @access  Public
-exports.getClinic = factory.getOne(Clinic, 'doctors', 'reviews'
+exports.getClinic = factory.getOne(Clinic, 'reviews'
 );
 
 // @desc    Create clinic

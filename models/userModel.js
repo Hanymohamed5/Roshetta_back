@@ -40,10 +40,13 @@ const userSchema = new mongoose.Schema(
             },
             default: null
         },
-        /*googleId: {
+        googleId: {
             type: String,
             unique: true,
-        }*/
+        },
+        facebookId: {
+            type: String,
+        },
     },
     {
         toJSON: { 
