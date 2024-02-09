@@ -60,11 +60,35 @@ exports.resizeClinicImages = asyncHandler(async (req, res, next) => {
 // @access  Public
 exports.getClinics = factory.getAll(Clinic);
 
-// @desc    Get specific doctor by id
+// @desc    Get specific clinic by id with reviews and doctors
 // @route   GET /api/v1/clinics/:id
 // @access  Public
-exports.getClinic = factory.getOne(Clinic, 'doctors'
-);
+exports.getClinic = async (req, res, next) => {
+  try {
+    const clinicId = req.params.id;
+
+    // Populate both reviews and doctors fields
+    const clinic = await Clinic.findById(clinicId)
+      .populate('reviews')
+      .populate('doctors');
+
+    if (!clinic) {
+      return res.status(404).json({
+        success: false,
+        error: 'Clinic not found',
+      });
+    }
+
+    // Return the clinic data with reviews and doctors
+    res.status(200).json({
+      success: true,
+      data: clinic,
+    });
+  } catch (error) {
+    // Handle errors
+    next(error);
+  }
+};
 
 // @desc    Create clinic
 // @route   POST  /api/v1/clinics

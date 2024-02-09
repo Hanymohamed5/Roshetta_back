@@ -81,12 +81,35 @@ exports.resizeCenterImages = asyncHandler(async (req, res, next) => {
 // @access  Public
 exports.getCenters = factory.getAll(Center);
 
-// @desc    Get specific center by id
+// @desc    Get specific center by id with reviews and doctors
 // @route   GET /api/v1/centers/:id
 // @access  Public
-exports.getCenter = factory.getOne(Center,
-  { path: 'doctors'}
-  );
+exports.getCenter = async (req, res, next) => {
+  try {
+    const centerId = req.params.id;
+
+    // Populate both reviews and doctors fields
+    const center = await Center.findById(centerId)
+      .populate('reviews')
+      .populate('doctors');
+
+    if (!center) {
+      return res.status(404).json({
+        success: false,
+        error: 'Center not found',
+      });
+    }
+
+    // Return the center data with reviews and doctors
+    res.status(200).json({
+      success: true,
+      data: center,
+    });
+  } catch (error) {
+    // Handle errors
+    next(error);
+  }
+};
 
 // @desc    Create center
 // @route   POST  /api/v1/centers
