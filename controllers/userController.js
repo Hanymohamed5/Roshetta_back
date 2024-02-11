@@ -38,34 +38,32 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
   const token = req.headers.authorization.split(' ')[1]; // Assuming the token is included in the Authorization header
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-  // Check if the user ID from the token matches the user ID in the request body
-  if (decoded.id !== req.params.id) {
-    res.status(401).json({
-      message: 'Unauthorized to update this user'
-    });
-  }
-
   // Update the user based on the decoded user ID
-  const updatedUser = await Users.findByIdAndUpdate(decoded.id, req.body, {
-    new: true,
-    runValidators: true,
-  }
-  ).select('-googleId');
+  const userId = decoded.id;
 
-  if (!updatedUser) {
+  // Construct the update query
+  const updateQuery = { _id: userId };
+
+  // Update the user without using findByIdAndUpdate
+  const updatedUser = await Users.updateOne(updateQuery, { $set: req.body }, {
+    runValidators: true,
+  });
+
+  if (updatedUser.nModified === 0) {
+    // No user was modified, meaning the user wasn't found
     return next(new ApiError('User not found', 404));
   }
-
+  // Fetch the updated user
+  const updatedUserData = await Users.findOne(updateQuery).select('-googleId');
   // Get a new token for the updated user
-  const newToken = jwt.sign({ id: updatedUser._id }, process.env.JWT_SECRET, {
+  const newToken = jwt.sign({ id: updatedUserData._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
   res.status(200).json({
-    status: 'success',
     data: {
       token: newToken,
-      user: updatedUser,
+      user: updatedUserData,
     },
   });
 });

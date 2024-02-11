@@ -14,8 +14,6 @@ const doctorRoute = require('./routes/DoctorRoutes');
 const clinicRoute = require('./routes/ClinicRoutes');
 const centerRoute = require('./routes/CenterRoutes');
 const userRoute = require("./routes/userRoute");
-const notificationRouter = require('./controllers/notification-controller')
-const { fireNotification } = require('./controllers/notification-controller');
 const reviewRoute = require('./routes/reviewRoutes');
 
 
@@ -59,8 +57,7 @@ app.use('/api/v1/doctors', doctorRoute);
 app.use('/api/v1/clinics', clinicRoute);
 app.use('/api/v1/centers', centerRoute);
 app.use('/api/v1/reviews', reviewRoute);
-app.use('/', notificationRouter);
-app.get("/", fireNotification);
+
 
 app.all('*', (req, res, next) => {
     next(new ApiError(`can't find this route: ${req.originalUrl}`, 400))
