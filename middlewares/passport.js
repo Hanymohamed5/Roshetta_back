@@ -21,7 +21,10 @@ passport.use(new GooglePlusTokenStrategy({
             provider: "google"
         });
 
-        if (user) return done(null, user)
+        if (user) {
+            // If the user exists, return the user
+            return done(null, user);
+        }
 
         // if new account
         const newUser = new User({
@@ -29,18 +32,32 @@ passport.use(new GooglePlusTokenStrategy({
             googleId: profile.id,
             name: profile.displayName,
             email: profile.emails[0].value,
-        })
-        const token = jwt.sign({ id: newUser._id}, process.env.JWT_SECRET, {
-            expiresIn: process.env.JWT_EXPIRES_IN
         });
-        await newUser.save();
-        done(null, newUser)
-        console.log(newUser,token);
+        // Attempt to save the new user, handling duplicate key error
+        try {
+            const savedUser = await newUser.save();
+            const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
+                expiresIn: process.env.JWT_EXPIRES_IN
+            });
+
+            done(null, savedUser);
+            console.log(savedUser, token);
+        } catch (error) {
+            // Handle duplicate key error
+            if (error.code === 11000) {
+                // If it's a duplicate key error, retrieve and return the existing user
+                const existingUser = await User.findOne({ googleId: profile.id });
+                done(null, existingUser);
+            } else {
+                // Handle other errors
+                done(error, false);
+            }
+        }
     } catch (error) {
-        done(error, false)
+        done(error, false);
     }
-}
-));
+}));
+
 
 // passport Facebook
 passport.use(new facebookTokenStrategy({
