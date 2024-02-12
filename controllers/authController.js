@@ -100,22 +100,47 @@ exports.authfacebook = asyncHandler(async (req, res, next) => {
 });
 
 
-exports.authapple = asyncHandler(async(req,res, next) => {
+/*exports.authapple = asyncHandler(async (req, res, next) => {
   const user = req.user;
 
-  // Get or create a new token for the user
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
+  try {
+    // Check if the user exists in the database
+    let existingUser = await User.findOne({ appleId: user.appleId });
 
-  return res.status(200).json({
-    status: 'success',
-    data: {
-      user,
-      token
+    if (!existingUser) {
+      existingUser = await User.create({
+        appleId: user.appleId,
+
+      });
     }
-  })
-}) 
+    const { appleId, __v, _id, ...userWithoutSensitiveData } = existingUser.toObject();
+
+    if (userWithoutSensitiveData.MedicalHistory) {
+
+      delete userWithoutSensitiveData.MedicalHistory.id;
+      delete userWithoutSensitiveData.MedicalHistory._id;
+    }
+
+    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        token,
+        user: userWithoutSensitiveData, // Send the user object without sensitive data
+      },
+    });
+  } catch (error) {
+    // Handle any other errors
+    return res.status(500).json({
+      status: 'error',
+      error: error.message,
+    });
+  }
+});*/
+ 
 
 // @desc   make sure the user is logged in
 exports.protect = asyncHandler(async (req, res, next) => {

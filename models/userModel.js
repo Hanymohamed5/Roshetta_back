@@ -47,6 +47,9 @@ const userSchema = new mongoose.Schema(
         facebookId: {
             type: String,
         },
+        appleId: {
+            type: String,
+        }
     },
     {
         toJSON: { 

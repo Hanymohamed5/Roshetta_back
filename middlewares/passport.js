@@ -108,17 +108,49 @@ passport.use(new facebookTokenStrategy({
 }
 ));
 
-//passport apple
-
 /*passport.use(new appleTokenStrategy({
-   clientID: process.env.apple_clientID,
-   teamID: process.env.teamID,
-   keyID: process.env.keyID,
-}, async (req,accessToken, refreshToken, idToken, profile, done) => {
-   try {
+    clientID: process.env.APPLE_CLIENT_ID,
+    teamID: process.env.APPLE_TEAM_ID,
+    keyID: process.env.APPLE_KEY_ID,
+}, async (accessToken, refreshToken, idToken, profile, done) => {
+    try {
+        // check whether this current user exists in your database
+        const user = await User.findOne({
+            appleId: profile.sub, // assuming sub is the Apple user ID
+            provider: 'apple',
+        });
 
-   } catch (error) {
-       done(error, false)
-   }
-}
-));*/
+        if (user) return done(null, user);
+
+        // if new account
+        const newUser = new User({
+            provider: 'apple',
+            appleId: profile.sub, // assuming sub is the Apple user ID
+            name: profile.email, // you may use a different property based on your needs
+            // other relevant properties from the Apple profile
+        });
+
+        // Attempt to save the new user, handling duplicate key error
+        try {
+            const savedUser = await newUser.save();
+            const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
+                expiresIn: process.env.JWT_EXPIRES_IN,
+            });
+
+            done(null, savedUser);
+            console.log(savedUser, token);
+        } catch (error) {
+            // Handle duplicate key error
+            if (error.code === 11000) {
+                // If it's a duplicate key error, retrieve and return the existing user
+                const existingUser = await User.findOne({ appleId: profile.sub });
+                done(null, existingUser);
+            } else {
+                // Handle other errors
+                done(error, false);
+            }
+        }
+    } catch (error) {
+        done(error, false);
+    }
+}));*/
