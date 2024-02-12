@@ -53,39 +53,52 @@ exports.authGoogle = asyncHandler(async (req, res, next) => {
   }
 });
 
-
-
-
-exports.authfacebook = asyncHandler(async(req, res, next) => {
+exports.authfacebook = asyncHandler(async (req, res, next) => {
   const user = req.user;
 
-  // Check if the user exists in the database
-  let existingUser = await User.findOne({ facebookId: user.facebookId });
+  try {
+    // Check if the user exists in the database
+    let existingUser = await User.findOne({ facebookId: user.facebookId });
 
-  if (!existingUser) {
-    // If the user doesn't exist, save it in the database
-    existingUser = await User.create({
-      facebookId: user.facebookId,
-      // Add other properties from req.user if needed
+    if (!existingUser) {
+      // If the user doesn't exist, save it in the database
+      existingUser = await User.create({
+        facebookId: user.facebookId,
+        // Add other properties from req.user if needed
+      });
+    }
+
+    // Remove the facebookId, __v, and _id from the user object
+    const { facebookId, __v, _id, ...userWithoutSensitiveData } = existingUser.toObject();
+
+    // Check if MedicalHistory exists before attempting to delete its properties
+    if (userWithoutSensitiveData.MedicalHistory) {
+      // Remove id and _id from MedicalHistory
+      delete userWithoutSensitiveData.MedicalHistory.id;
+      delete userWithoutSensitiveData.MedicalHistory._id;
+    }
+
+    // Get or create a new token for the user
+    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        token,
+        user: userWithoutSensitiveData, // Send the user object without sensitive data
+      },
+    });
+  } catch (error) {
+    // Handle any other errors
+    return res.status(500).json({
+      status: 'error',
+      error: error.message,
     });
   }
-
-  // Remove the googleId, __v, and _id from the user object
-  const { googleId, __v, _id,facebookId, ...userWithoutSensitiveData } = existingUser.toObject();
-
-  // Get or create a new token for the user
-  const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-
-  return res.status(200).json({
-    status: 'success',
-    data: {
-      token,
-      user: userWithoutSensitiveData  // Send the user object without sensitive data
-    }
-  });
 });
+
 
 exports.authapple = asyncHandler(async(req,res, next) => {
   const user = req.user;

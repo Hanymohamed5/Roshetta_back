@@ -54,7 +54,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     return next(new ApiError('User not found', 404));
   }
   // Fetch the updated user
-  const updatedUserData = await Users.findOne(updateQuery).select('-googleId');
+  const updatedUserData = await Users.findOne(updateQuery).select('-googleId').select('-facebookId');
   // Get a new token for the updated user
   const newToken = jwt.sign({ id: updatedUserData._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -67,9 +67,6 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     },
   });
 });
-
-
-
 
 // @desc    Get list of users
 // @route   GET /api/v1/users
