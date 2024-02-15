@@ -11,10 +11,12 @@ exports.deleteOne = (Model) =>
       return next(new ApiError(`No document for this id ${id}`, 404));
     }
 
-    // Trigger "remove" event when update document
-    document.remove();
+    // Remove the line below, as the document is already deleted by findByIdAndDelete
+    // document.remove();
+
     res.status(204).send();
   });
+
 
 exports.updateOne = (Model) =>
   asyncHandler(async (req, res, next) => {
