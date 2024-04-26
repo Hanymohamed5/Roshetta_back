@@ -42,9 +42,9 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 
 const createBookingCheckout = async session => {
     const doctor = session.client_reference_id;
-    const user = (await User.findOne({ email: session.customer_email })).id;
+    //const user = (await User.findOne({ email: session.customer_email })).id;
     const price = session.display_items[0].unit_amount / 100;
-    await Booking.create({ doctor, user, price });
+    await Booking.create({ doctor, price });
   };
 
 exports.webhookCheckout = catchAsync (async(req, res, next) => {
