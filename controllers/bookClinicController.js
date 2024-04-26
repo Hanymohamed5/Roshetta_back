@@ -40,7 +40,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     });
 });
 
-const createBookingCheckout = async session => {
+const createBookingClinicCheckout = async session => {
     try {
         const clinicId = session.client_reference_id;
         const clinic = await Clinic.findById(clinicId);
@@ -53,7 +53,7 @@ const createBookingCheckout = async session => {
 
         const price = session.amount_total / 100; // 'amount_total' contains the total amount in the smallest currency unit
         await BookingClinic.create({ clinic: clinicId, user: user.id, price });
-        console.log('Booking created:', { clinic: clinicId, user: user.id, price });
+        console.log('BookingClinic created:', { clinic: clinicId, user: user.id, price });
     } catch (error) {
         console.error('Error creating booking:', error);
         throw new AppError('Error creating booking', 500);
@@ -69,14 +69,14 @@ exports.webhookCheckout = catchAsync (async(req, res, next) => {
       event = stripe.webhooks.constructEvent(
         req.body,
         signature,
-        process.env.STRIPE_WEBHOOK_SECRET
+        process.env.STRIPE_WEBHOOK_SECRET_Clinic
       );
     } catch (err) {
       return res.status(400).send(`Webhook error: ${err.message}`);
     }
   
     if (event.type === 'checkout.session.completed'){
-        createBookingCheckout(event.data.object);
+        createBookingClinicCheckout(event.data.object);
 
   res.status(200).json({ received: true });
     }
