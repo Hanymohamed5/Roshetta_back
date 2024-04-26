@@ -23,6 +23,13 @@ const bookingController = require('./controllers/bookingController');
 dbConnection()
 // express App
 const app = express();
+
+// Stripe webhook, BEFORE body-parser, because stripe needs the body as stream
+app.post(
+    '/webhook-checkout',
+    express.raw({ type: 'application/json' }),
+    bookingController.webhookCheckout
+  );
 // middlewares
 app.use(express.json());
 
@@ -51,12 +58,6 @@ passport.deserializeUser(function (user, done) {
 
 app.use(compression());
 
-// Stripe webhook, BEFORE body-parser, because stripe needs the body as stream
-app.post(
-    '/webhook-checkout',
-    express.raw({ type: 'application/json' }),
-    bookingController.webhookCheckout
-  );
 
 // Routes
 app.use('/api/v1/users', userRoute)
