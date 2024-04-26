@@ -41,11 +41,17 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 });
 
 const createBookingCheckout = async session => {
-    const doctor = session.client_reference_id;
-    //const user = (await User.findOne({ email: session.customer_email })).id;
-    const price = session.display_items[0].unit_amount / 100;
-    await Booking.create({ doctor, price });
-  };
+    try {
+        const doctorId = session.client_reference_id;
+        const doctor = await Doctor.findById(doctorId);
+        const price = session.amount_total / 100; // 'amount_total' contains the total amount in the smallest currency unit
+        await Booking.create({ doctor: doctorId, price });
+        console.log('Booking created:', { doctor: doctorId, price });
+    } catch (error) {
+        console.error('Error creating booking:', error);
+        throw new AppError('Error creating booking', 500);
+    }
+};
 
 exports.webhookCheckout = catchAsync (async(req, res, next) => {
     const signature = req.headers['stripe-signature'];
