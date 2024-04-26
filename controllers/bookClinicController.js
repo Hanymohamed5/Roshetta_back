@@ -1,7 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const Clinic = require('./../models/clinicModel');
 const User = require('../models/userModel');
-const Booking = require('../models/bookClinicModel');
+const BookingClinic = require('../models/bookClinicModel');
 const catchAsync = require('./../utils/catchAsync');
 const factory = require('./handlersFactory');
 const AppError = require('./../utils//apiError');
@@ -52,7 +52,7 @@ const createBookingCheckout = async session => {
         }
 
         const price = session.amount_total / 100; // 'amount_total' contains the total amount in the smallest currency unit
-        await Booking.create({ clinic: clinicId, user: user.id, price });
+        await BookingClinic.create({ clinic: clinicId, user: user.id, price });
         console.log('Booking created:', { clinic: clinicId, user: user.id, price });
     } catch (error) {
         console.error('Error creating booking:', error);
@@ -90,11 +90,11 @@ exports.getUserBookings = catchAsync(async (req, res, next) => {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
     const skip = (page - 1) * limit;
 
-    const bookings = await Booking.find({ user: userId })
+    const bookingsClinic = await BookingClinic.find({ user: userId })
         .skip(skip)
         .limit(limit);
 
-    const totalBookings = await Booking.countDocuments({ user: userId });
+    const totalBookings = await BookingClinic.countDocuments({ user: userId });
 
     if (!bookings || bookings.length === 0) {
         return next(new AppError('No bookings found for this user', 404));
@@ -102,17 +102,17 @@ exports.getUserBookings = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
         status: 'success',
-        results: bookings.length,
+        results: bookingsClinic.length,
         totalBookings,
         data: {
-            bookings
+            bookingsClinic
         }
     });
 });
 
 
-exports.createBooking = factory.createOne(Booking);
-exports.getBooking = factory.getOne(Booking);
-exports.getAllBookings = factory.getAll(Booking);
-exports.updateBooking = factory.updateOne(Booking);
-exports.deleteBooking = factory.deleteOne(Booking);
+exports.createBooking = factory.createOne(BookingClinic);
+exports.getBooking = factory.getOne(BookingClinic);
+exports.getAllBookings = factory.getAll(BookingClinic);
+exports.updateBooking = factory.updateOne(BookingClinic);
+exports.deleteBooking = factory.deleteOne(BookingClinic);
