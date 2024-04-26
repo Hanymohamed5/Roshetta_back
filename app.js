@@ -54,7 +54,7 @@ app.use(compression());
 // Stripe webhook, BEFORE body-parser, because stripe needs the body as stream
 app.post(
     '/webhook-checkout',
-    bodyParser.raw({ type: 'application/json' }),
+    express.raw({ type: 'application/json' }),
     bookingController.webhookCheckout
   );
 
