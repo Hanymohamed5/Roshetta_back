@@ -5,6 +5,7 @@ const Booking = require('../models/bookingModel');
 const catchAsync = require('./../utils/catchAsync');
 const factory = require('./handlersFactory');
 const AppError = require('./../utils//apiError');
+const expressAsyncHandler = require('express-async-handler');
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     // 1. Get the currently booked doctor
@@ -39,7 +40,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.webhookCheckout = (req, res, next) => {
+exports.webhookCheckout = catchAsync (async(req, res, next) => {
     const signature = req.headers['stripe-signature'];
   
     let event;
@@ -57,7 +58,7 @@ exports.webhookCheckout = (req, res, next) => {
       createBookingCheckout(event.data.object);
   
     res.status(200).json({ received: true });
-  };
+  });
 
 
 exports.createBooking = factory.createOne(Booking);
