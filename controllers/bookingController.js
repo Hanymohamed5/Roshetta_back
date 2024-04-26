@@ -83,6 +83,34 @@ exports.webhookCheckout = catchAsync (async(req, res, next) => {
   });
 
 
+exports.getUserBookings = catchAsync(async (req, res, next) => {
+    const userId = req.params.userId;
+
+    const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const skip = (page - 1) * limit;
+
+    const bookings = await Booking.find({ user: userId })
+        .skip(skip)
+        .limit(limit);
+
+    const totalBookings = await Booking.countDocuments({ user: userId });
+
+    if (!bookings || bookings.length === 0) {
+        return next(new AppError('No bookings found for this user', 404));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        results: bookings.length,
+        totalBookings,
+        data: {
+            bookings
+        }
+    });
+});
+
+
 exports.createBooking = factory.createOne(Booking);
 exports.getBooking = factory.getOne(Booking);
 exports.getAllBookings = factory.getAll(Booking);
