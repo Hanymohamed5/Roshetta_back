@@ -15,6 +15,8 @@ const clinicRoute = require('./routes/ClinicRoutes');
 const centerRoute = require('./routes/CenterRoutes');
 const userRoute = require("./routes/userRoute");
 const reviewRoute = require('./routes/reviewRoutes');
+const bookingRoute = require('./routes/bookingRoute');
+const bookingController = require('./controllers/bookingController');
 
 
 // connect with db
@@ -49,6 +51,13 @@ passport.deserializeUser(function (user, done) {
 
 app.use(compression());
 
+// Stripe webhook, BEFORE body-parser, because stripe needs the body as stream
+app.post(
+    '/webhook-checkout',
+    bodyParser.raw({ type: 'application/json' }),
+    bookingController.webhookCheckout
+  );
+
 // Routes
 app.use('/api/v1/users', userRoute)
 app.use('/api/v1/slides', slideRoute);
@@ -57,6 +66,7 @@ app.use('/api/v1/doctors', doctorRoute);
 app.use('/api/v1/clinics', clinicRoute);
 app.use('/api/v1/centers', centerRoute);
 app.use('/api/v1/reviews', reviewRoute);
+app.use('/api/v1/bookings', bookingRoute);
 
 
 app.all('*', (req, res, next) => {

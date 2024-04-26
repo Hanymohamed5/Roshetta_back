@@ -27,6 +27,7 @@
     "express-session": "^1.17.3",
     "express-validator": "^7.0.1",
     "facebook-nodejs-business-sdk": "^18.0.2",
+    "firebase-admin": "^12.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongod": "^2.0.0",
     "mongodb": "^5.4.0",
@@ -47,6 +48,7 @@
     "sharp": "^0.32.6",
     "slugify": "^1.6.6",
     "socket.io": "^4.7.2",
+    "stripe": "^15.3.0",
     "uniqid": "^5.4.0",
     "uuid": "^9.0.1"
   },
