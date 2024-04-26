@@ -17,6 +17,7 @@ const userRoute = require("./routes/userRoute");
 const reviewRoute = require('./routes/reviewRoutes');
 const bookingRoute = require('./routes/bookingRoute');
 const bookingController = require('./controllers/bookingController');
+const bookingClinicController = require('./controllers/bookClinicController');
 const bookingClinicRoute = require('./routes/bookClinicRoute')
 
 
@@ -30,6 +31,12 @@ app.post(
     '/webhook-checkout',
     express.raw({ type: 'application/json' }),
     bookingController.webhookCheckout
+  );
+
+app.post(
+    '/webhook-checkout',
+    express.raw({ type: 'application/json' }),
+    bookingClinicController.webhookCheckout
   );
 // middlewares
 app.use(express.json());
