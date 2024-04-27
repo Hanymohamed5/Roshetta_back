@@ -30,9 +30,14 @@ const app = express();
 app.post(
     '/webhook-checkout',
     express.raw({ type: 'application/json' }),
+    (req, res, next) => {
+        // Verify if the raw body is correctly received
+        console.log('Raw request body:', req.body);
+        next();
+    },
     bookingClinicController.webhookCheckout,
-    bookingController.webhookCheckout,
-  );
+    bookingController.webhookCheckout
+);
 // middlewares
 app.use(express.json());
 
