@@ -34,6 +34,10 @@ app.post(
     bookingController.webhookCheckout,
     bookingClinicController.webhookCheckout,
   );
+
+  app.get('/', (req, res) => {
+    res.send('Welcome to Roshetta!');
+  });
 // middlewares
 app.use(express.json());
 
