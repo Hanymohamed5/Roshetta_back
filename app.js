@@ -30,8 +30,8 @@ const app = express();
 app.post(
     '/webhook-checkout',
     express.raw({ type: 'application/json' }),
+    bookingClinicController.webhookCheckout,
     bookingController.webhookCheckout,
-    bookingClinicController.webhookCheckout
   );
 // middlewares
 app.use(express.json());
