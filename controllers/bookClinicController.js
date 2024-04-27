@@ -40,10 +40,10 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     });
 });
 
-const createBookingClinicCheckout = async session => {
+const createBookingCheckout = async session => {
     try {
         const clinicId = session.client_reference_id;
-        const clinic = await Clinic.findById(clinicId);
+        const clinic = await Doctor.findById(clinicId);
         const user = await User.findOne({ email: session.customer_email });
         
         // Check if user exists
@@ -53,7 +53,7 @@ const createBookingClinicCheckout = async session => {
 
         const price = session.amount_total / 100; // 'amount_total' contains the total amount in the smallest currency unit
         await BookingClinic.create({ clinic: clinicId, user: user.id, price });
-        console.log('BookingClinic created:', { clinic: clinicId, user: user.id, price });
+        console.log('Booking created:', { clinic: clinicId, user: user.id, price });
     } catch (error) {
         console.error('Error creating booking:', error);
         throw new AppError('Error creating booking', 500);
@@ -76,7 +76,7 @@ exports.webhookCheckout = catchAsync (async(req, res, next) => {
     }
   
     if (event.type === 'checkout.session.completed'){
-        createBookingClinicCheckout(event.data.object);
+        createBookingCheckout(event.data.object);
 
   res.status(200).json({ received: true });
     }
