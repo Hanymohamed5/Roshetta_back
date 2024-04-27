@@ -26,17 +26,17 @@ dbConnection()
 // express App
 const app = express();
 
+app.post(
+    '/webhook-checkout',
+    express.raw({ type: 'application/json' }),
+    bookingClinicController.webhookCheckout
+  );
+
 // Stripe webhook, BEFORE body-parser, because stripe needs the body as stream
 app.post(
     '/webhook-checkout',
     express.raw({ type: 'application/json' }),
     bookingController.webhookCheckout
-  );
-
-app.post(
-    '/webhook-checkout',
-    express.raw({ type: 'application/json' }),
-    bookingClinicController.webhookCheckout
   );
 // middlewares
 app.use(express.json());
