@@ -1,5 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const Doctor = require('./../models/DoctorModel');
+const Clinic = require('./../models/clinicModel');
 const User = require('../models/userModel');
 const Booking = require('../models/bookingModel');
 const catchAsync = require('./../utils/catchAsync');
@@ -40,6 +41,39 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.getCheckoutClinicSession = catchAsync(async (req, res, next) => {
+    // 1. Get the currently booked doctor
+    const clinic = await Clinic.findById(req.params.clinicId);
+
+    // 2. Create checkout session
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        success_url: `${req.protocol}://${req.get('host')}/`,
+        cancel_url: `${req.protocol}://${req.get('host')}/clinic/${clinic.name}`,
+        client_reference_id: req.params.clinicId,
+        line_items: [
+            {
+                price_data: {
+                    currency: 'egp',
+                    product_data: {
+                        name: `${clinic.name} Clinic`,
+                        description: `${clinic.bio}`,
+                    },
+                    unit_amount: clinic.price * 100, // Convert price to smallest currency unit
+                },
+                quantity: 1
+            }
+        ],
+        mode: 'payment' // Specify the mode as 'payment'
+    });
+
+    // 3. Return session as response
+    res.status(200).json({
+        status: 'success',
+        session
+    });
+});
+
 const createBookingCheckout = async session => {
     try {
         const doctorId = session.client_reference_id;
@@ -54,6 +88,26 @@ const createBookingCheckout = async session => {
         const price = session.amount_total / 100; // 'amount_total' contains the total amount in the smallest currency unit
         await Booking.create({ doctor: doctorId, user: user.id, price });
         console.log('Booking created:', { doctor: doctorId, user: user.id, price });
+    } catch (error) {
+        console.error('Error creating booking:', error);
+        throw new AppError('Error creating booking', 500);
+    }
+};
+
+const createBookingClinicCheckout = async session => {
+    try {
+        const clinicId = session.client_reference_id;
+        const clinic = await Doctor.findById(clinicId);
+        const user = await User.findOne({ email: session.customer_email });
+        
+        // Check if user exists
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const price = session.amount_total / 100; // 'amount_total' contains the total amount in the smallest currency unit
+        await Booking.create({ clinic: clinicId, user: user.id, price });
+        console.log('Booking created:', { clinic: clinicId, user: user.id, price });
     } catch (error) {
         console.error('Error creating booking:', error);
         throw new AppError('Error creating booking', 500);
@@ -76,7 +130,8 @@ exports.webhookCheckout = catchAsync (async(req, res, next) => {
     }
   
     if (event.type === 'checkout.session.completed'){
-        createBookingCheckout(event.data.object);
+        createBookingCheckout(event.data.object),
+        createBookingClinicCheckout(event.data.object)
 
   res.status(200).json({ received: true });
     }

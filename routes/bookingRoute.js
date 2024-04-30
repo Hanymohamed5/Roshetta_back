@@ -8,6 +8,10 @@ router.get('/checkout-session/:doctorId',
     authController.protect,
     bookingController.getCheckoutSession
 );
+router.get('/checkoutClinic-session/:clinicId',
+    authController.protect,
+    bookingController.getCheckoutClinicSession
+);
 
 router
   .route('/')

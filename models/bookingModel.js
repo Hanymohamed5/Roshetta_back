@@ -4,7 +4,12 @@ const bookingSchema = new mongoose.Schema({
   doctor: {
     type: mongoose.Schema.ObjectId,
     ref: 'Doctor',
-    required: [true, 'Booking must belong to a Doctor!']
+    //required: [true, 'Booking must belong to a Doctor!']
+  },
+  clinic: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Clinic',
+    //required: [true, 'Booking must belong to a Doctor!']
   },
   user: {
     type: mongoose.Schema.ObjectId,
