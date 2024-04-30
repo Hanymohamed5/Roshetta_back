@@ -12,6 +12,10 @@ router.get('/checkoutClinic-session/:clinicId',
     authController.protect,
     bookingController.getCheckoutClinicSession
 );
+router.get('/checkoutCenter-session/:centerId',
+    authController.protect,
+    bookingController.getCheckoutCenterSession
+);
 
 router
   .route('/')

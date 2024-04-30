@@ -1,6 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const Doctor = require('./../models/DoctorModel');
 const Clinic = require('./../models/clinicModel');
+const Center = require('./../models/centerModel');
 const User = require('../models/userModel');
 const Booking = require('../models/bookingModel');
 const catchAsync = require('./../utils/catchAsync');
@@ -8,6 +9,7 @@ const factory = require('./handlersFactory');
 const AppError = require('./../utils//apiError');
 const expressAsyncHandler = require('express-async-handler');
 
+// check-out for doctor
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     // 1. Get the currently booked doctor
     const doctor = await Doctor.findById(req.params.doctorId);
@@ -41,6 +43,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     });
 });
 
+// check-out for clinic
 exports.getCheckoutClinicSession = catchAsync(async (req, res, next) => {
     // 1. Get the currently booked doctor
     const clinic = await Clinic.findById(req.params.clinicId);
@@ -74,6 +77,41 @@ exports.getCheckoutClinicSession = catchAsync(async (req, res, next) => {
     });
 });
 
+// check-out for center
+exports.getCheckoutCenterSession = catchAsync(async (req, res, next) => {
+    // 1. Get the currently booked doctor
+    const center = await Center.findById(req.params.centerId);
+
+    // 2. Create checkout session
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        success_url: `${req.protocol}://${req.get('host')}/`,
+        cancel_url: `${req.protocol}://${req.get('host')}/center/${center.name}`,
+        client_reference_id: req.params.centerId,
+        line_items: [
+            {
+                price_data: {
+                    currency: 'egp',
+                    product_data: {
+                        name: `${center.name} Clinic`,
+                        description: `${center.bio}`,
+                    },
+                    unit_amount: center.price * 100, // Convert price to smallest currency unit
+                },
+                quantity: 1
+            }
+        ],
+        mode: 'payment' // Specify the mode as 'payment'
+    });
+
+    // 3. Return session as response
+    res.status(200).json({
+        status: 'success',
+        session
+    });
+});
+
+// create booking for doctor
 const createBookingCheckout = async session => {
     try {
         const doctorId = session.client_reference_id;
@@ -94,6 +132,7 @@ const createBookingCheckout = async session => {
     }
 };
 
+// create booking for clinic
 const createBookingClinicCheckout = async session => {
     try {
         const clinicId = session.client_reference_id;
@@ -108,6 +147,27 @@ const createBookingClinicCheckout = async session => {
         const price = session.amount_total / 100; // 'amount_total' contains the total amount in the smallest currency unit
         await Booking.create({ clinic: clinicId, user: user.id, price });
         console.log('Booking created:', { clinic: clinicId, user: user.id, price });
+    } catch (error) {
+        console.error('Error creating booking:', error);
+        throw new AppError('Error creating booking', 500);
+    }
+};
+
+// create booking for center
+const createBookingCenterCheckout = async session => {
+    try {
+        const centerId = session.client_reference_id;
+        const center = await Doctor.findById(centerId);
+        const user = await User.findOne({ email: session.customer_email });
+        
+        // Check if user exists
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const price = session.amount_total / 100; // 'amount_total' contains the total amount in the smallest currency unit
+        await Booking.create({ center: centerId, user: user.id, price });
+        console.log('Booking created:', { center: centerId, user: user.id, price });
     } catch (error) {
         console.error('Error creating booking:', error);
         throw new AppError('Error creating booking', 500);
@@ -134,6 +194,7 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
         const clientReferenceId = session.client_reference_id;
         const doctor = await Doctor.findById(clientReferenceId);
         const clinic = await Clinic.findById(clientReferenceId);
+        const center = await Center.findById(clientReferenceId);
 
         if (doctor) {
             createBookingCheckout(session);
@@ -141,7 +202,11 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
         } else if (clinic) {
             createBookingClinicCheckout(session);
             res.status(200).json({ received: true, bookingType: 'clinic' });
-        } else {
+        } else if (center) {
+            createBookingCenterCheckout(session)
+            res.status(200).json({ received: true, bookingType: 'center' })
+        }
+         else {
             return next(new AppError('Invalid client reference id', 404));
         }
     } else {

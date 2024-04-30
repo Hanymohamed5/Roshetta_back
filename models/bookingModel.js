@@ -11,6 +11,11 @@ const bookingSchema = new mongoose.Schema({
     ref: 'Clinic',
     //required: [true, 'Booking must belong to a Doctor!']
   },
+  center: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Center',
+    //required: [true, 'Booking must belong to a Doctor!']
+  },
   user: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
@@ -45,6 +50,20 @@ const bookingSchema = new mongoose.Schema({
 bookingSchema.pre(/^find/, function(next) {
   this.populate('user').populate({
     path: 'doctor',
+    select: 'name'
+  });
+  next();
+});
+bookingSchema.pre(/^find/, function(next) {
+  this.populate('user').populate({
+    path: 'clinic',
+    select: 'name'
+  });
+  next();
+});
+bookingSchema.pre(/^find/, function(next) {
+  this.populate('user').populate({
+    path: 'center',
     select: 'name'
   });
   next();
