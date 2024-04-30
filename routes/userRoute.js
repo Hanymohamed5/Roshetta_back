@@ -1,7 +1,7 @@
 const express = require('express')
 const { updateUser, getUsers, getUser, deleteUser, uploadUserImage, resizeImage } = require("../controllers/userController")
 const { updateUserValidator } = require("../utils/validators/userValidator")
-const bookingController = require('./../controllers/bookClinicController');
+const bookingController = require('../controllers/bookingController')
 
 const router = express.Router();
 
@@ -15,9 +15,9 @@ router.get('/:userId/bookings', // Assuming you want to protect this route
     bookingController.getUserBookings
 );
 
-router.get('/:userId/bookings', // Assuming you want to protect this route
+/*router.get('/:userId/bookings', // Assuming you want to protect this route
     bookingController.getUserBookings
-);
+);*/
 
 
 module.exports = router;
