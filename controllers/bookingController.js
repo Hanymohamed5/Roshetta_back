@@ -115,27 +115,40 @@ const createBookingClinicCheckout = async session => {
 };
 
 
-exports.webhookCheckout = catchAsync (async(req, res, next) => {
+exports.webhookCheckout = catchAsync(async (req, res, next) => {
     const signature = req.headers['stripe-signature'];
-  
+
     let event;
     try {
-      event = stripe.webhooks.constructEvent(
-        req.body,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
+        event = stripe.webhooks.constructEvent(
+            req.body,
+            signature,
+            process.env.STRIPE_WEBHOOK_SECRET
+        );
     } catch (err) {
-      return res.status(400).send(`Webhook error: ${err.message}`);
+        return res.status(400).send(`Webhook error: ${err.message}`);
     }
-  
-    if (event.type === 'checkout.session.completed'){
-        createBookingCheckout(event.data.object),
-        createBookingClinicCheckout(event.data.object)
 
-  res.status(200).json({ received: true });
+    if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        const clientReferenceId = session.client_reference_id;
+        const doctor = await Doctor.findById(clientReferenceId);
+        const clinic = await Clinic.findById(clientReferenceId);
+
+        if (doctor) {
+            createBookingCheckout(session);
+            res.status(200).json({ received: true, bookingType: 'doctor' });
+        } else if (clinic) {
+            createBookingClinicCheckout(session);
+            res.status(200).json({ received: true, bookingType: 'clinic' });
+        } else {
+            return next(new AppError('Invalid client reference id', 404));
+        }
+    } else {
+        res.status(200).json({ received: false });
     }
-  });
+});
+
 
 
 exports.getUserBookings = catchAsync(async (req, res, next) => {
