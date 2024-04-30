@@ -17,8 +17,6 @@ const userRoute = require("./routes/userRoute");
 const reviewRoute = require('./routes/reviewRoutes');
 const bookingRoute = require('./routes/bookingRoute');
 const bookingController = require('./controllers/bookingController');
-//const bookingClinicController = require('./controllers/bookClinicController');
-//const bookingClinicRoute = require('./routes/bookClinicRoute')
 
 
 // connect with db
@@ -76,7 +74,6 @@ app.use('/api/v1/clinics', clinicRoute);
 app.use('/api/v1/centers', centerRoute);
 app.use('/api/v1/reviews', reviewRoute);
 app.use('/api/v1/bookings', bookingRoute);
-//app.use('/api/v1/bookingsClinic', bookingClinicRoute);
 
 
 app.all('*', (req, res, next) => {
