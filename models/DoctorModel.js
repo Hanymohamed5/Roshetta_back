@@ -90,7 +90,7 @@ DoctorSchema.pre(/^find/, function (next) {
 
 const setImageURL = (doc) => {
     if (doc.image) {
-        const imageUrl = `${process.env.BASE_URL}uploads/doctors/${doc.image}`;
+        const imageUrl = `${process.env.BASE_URL}/doctors/${doc.image}`;
         doc.image = imageUrl
     }
 };
