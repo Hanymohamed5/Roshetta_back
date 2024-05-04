@@ -12,7 +12,8 @@ exports.uploadCategoryImage = uploadSingleImage('image');
 
 // Image processing
 exports.resizeImage = asyncHandler(async (req, res, next) => {
-  const filename = `doctor-${uuidv4()}-${Date.now()}.jpeg`;
+  const filename = `
+  https://roshetta-wy5u.onrender.com/doctor-${uuidv4()}-${Date.now()}.jpeg`;
 
   if (req.file) {
     await sharp(req.file.buffer)
