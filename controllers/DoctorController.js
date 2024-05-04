@@ -20,7 +20,7 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
       .resize(600, 600)
       .toFormat('jpeg')
       .jpeg({ quality: 95 })
-      .toFile(`uploads/doctors/${filename}`);
+      .toFile(`https://roshetta-wy5u.onrender.com/uploads/doctors/${filename}`);
 
     // Save image into our db
     req.body.image = filename;
