@@ -12,15 +12,14 @@ exports.uploadCategoryImage = uploadSingleImage('image');
 
 // Image processing
 exports.resizeImage = asyncHandler(async (req, res, next) => {
-  const filename = `
-  https://roshetta-wy5u.onrender.com/doctor-${uuidv4()}-${Date.now()}.jpeg`;
+  const filename = `doctor-${uuidv4()}-${Date.now()}.jpeg`;
 
   if (req.file) {
     await sharp(req.file.buffer)
       .resize(600, 600)
       .toFormat('jpeg')
       .jpeg({ quality: 95 })
-      .toFile(`https://roshetta-wy5u.onrender.com/uploads/doctors/${filename}`);
+      .toFile(`uploads/doctors/${filename}`);
 
     // Save image into our db
     req.body.image = filename;
