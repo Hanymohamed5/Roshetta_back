@@ -30,7 +30,7 @@ router
     uploadCategoryImage,
     resizeImage,
     createDoctorValidator,
-    createDoctor
+    createDoctor,
   )
   .get(authController.protect,getDoctors);
 router

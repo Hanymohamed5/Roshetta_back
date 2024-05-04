@@ -68,6 +68,21 @@ const ClinicSchema = new mongoose.Schema(
       foreignField: 'clinic',
       localField: '_id',
     });
+
+    const setImageURL = (doc) => {
+      if (doc.logo) {
+          const imageUrl = `${process.env.BASE_URL}/clinics/${doc.logo}`;
+          doc.logo = imageUrl
+      }
+  };
+  
+  ClinicSchema.post('init', (doc) => {
+      setImageURL(doc)
+  });
+  
+  ClinicSchema.post('save', (doc) => {
+      setImageURL(doc)
+  });
 //ClinicSchema.plugin(autoIncrement);
 //ClinicSchema.plugin(autoIncrement, { id: '_id', inc_field: 'clinic_counter' });
 /*ClinicSchema.pre("save", function (next) {

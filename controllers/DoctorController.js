@@ -2,10 +2,9 @@ const sharp = require('sharp');
 const { v4: uuidv4 } = require('uuid');
 const asyncHandler = require('express-async-handler');
 const factory = require('./handlersFactory');
-const Doctor = require('../models/DoctorModel');
 const { uploadSingleImage } = require('../middlewares/uploadImageMiddleware');
-const ApiError = require('../utils/apiError');
-const ApiFeatures = require('../utils/apiFeatures.js');
+const Doctor = require('../models/DoctorModel');
+
 
 // Upload single image
 exports.uploadCategoryImage = uploadSingleImage('image');
