@@ -1,12 +1,14 @@
 const express = require('express');
 
-const slideController = require('../controllers/slideController')
+const slideController = require('../controllers/slideController');
+const authController = require('../controllers/authController');
 
   const router = express.Router();
 
   router.route('/')
-  .get(slideController.getBrands)
+  .get(authController.protect,slideController.getBrands)
   .post(
+    authController.protect,
     slideController.uploadBrandImage,
     slideController.resizeImage,
     slideController.createBrand
@@ -14,6 +16,6 @@ const slideController = require('../controllers/slideController')
 
   router
   .route('/:id')
-  .delete(slideController.deleteBrand);
+  .delete(authController.protect,slideController.deleteBrand);
 
 module.exports = router;

@@ -26,6 +26,7 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/')
   .post(
+    authController.protect,
     uploadCategoryImage,
     resizeImage,
     createDoctorValidator,
@@ -34,14 +35,16 @@ router
   .get(authController.protect,getDoctors);
 router
   .route('/:id')
-  .get(getDoctorValidator, getDoctor)
+  .get(authController.protect,getDoctorValidator, getDoctor)
   .put(
+    authController.protect,
     uploadCategoryImage,
     resizeImage,
     updateDoctorValidator,
-    updateDoctor
+    updateDoctor,
   )
   .delete(
+    authController.protect,
     deleteDoctorValidator,
     deleteDoctor
   );

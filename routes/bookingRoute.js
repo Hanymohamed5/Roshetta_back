@@ -19,14 +19,14 @@ router.get('/checkoutCenter-session/:centerId',
 
 router
   .route('/')
-  .get(bookingController.getAllBookings)
-  .post(bookingController.createBooking);
+  .get(authController.protect,bookingController.getAllBookings)
+  .post(authController.protect,bookingController.createBooking);
 
 router
 .route('/:id')
-.get(bookingController.getBooking)
-.patch(bookingController.updateBooking)
-.delete(bookingController.deleteBooking);
+.get(authController.protect,bookingController.getBooking)
+.patch(authController.protect,bookingController.updateBooking)
+.delete(authController.protect,bookingController.deleteBooking);
 
 
 

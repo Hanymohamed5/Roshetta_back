@@ -26,6 +26,7 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/')
   .post(
+    authController.protect,
     //uploadLogoImage,
     //resizeImage,
     uploadCenterImages,
@@ -36,14 +37,16 @@ router
   .get(authController.protect,getCenters)
 router
   .route('/:id')
-  .get(getCenterValidator, getCenter)
+  .get(authController.protect,getCenterValidator, getCenter)
   .put(
+    authController.protect,
     //uploadCategoryImage,
     //resizeImage,
     updateCenterValidator,
     updateCenter
   )
   .delete(
+    authController.protect,
     deleteCenterValidator,
     deleteCenter
   );
