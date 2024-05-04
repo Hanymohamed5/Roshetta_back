@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
@@ -44,6 +45,7 @@ if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
     console.log(`node: ${process.env.NODE_ENV}`)
 }
+app.use(express.static(path.join(__dirname, 'uploads')));
 
 app.use(session({
     resave: false,

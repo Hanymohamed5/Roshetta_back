@@ -90,18 +90,19 @@ DoctorSchema.pre(/^find/, function (next) {
 
 const setImageURL = (doc) => {
     if (doc.image) {
-        const imageUrl = `${process.env.BASE_URL}/doctors/${doc.image}`;
-        doc.image = imageUrl
+      const imageUrl = `${process.env.BASE_URL}/doctors/${doc.image}`;
+      doc.image = imageUrl;
     }
-};
-
-DoctorSchema.post('init', (doc) => {
-    setImageURL(doc)
-});
-
-DoctorSchema.post('save', (doc) => {
-    setImageURL(doc)
-});
+  };
+  // findOne, findAll and update
+  DoctorSchema.post('init', (doc) => {
+    setImageURL(doc);
+  });
+  
+  // create
+  DoctorSchema.post('save', (doc) => {
+    setImageURL(doc);
+  });
 
 //DoctorSchema.plugin(autoIncrement);
 
