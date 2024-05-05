@@ -71,18 +71,27 @@ const ClinicSchema = new mongoose.Schema(
 
     const setImageURL = (doc) => {
       if (doc.logo) {
-          const imageUrl = `${process.env.BASE_URL}/clinics/${doc.logo}`;
-          doc.logo = imageUrl
+        const imageUrl = `${process.env.BASE_URL}/clinics/${doc.logo}`;
+        doc.logo = imageUrl;
       }
-  };
-  
-  ClinicSchema.post('init', (doc) => {
-      setImageURL(doc)
-  });
-  
-  ClinicSchema.post('save', (doc) => {
-      setImageURL(doc)
-  });
+      if (doc.clinicPhotos) {
+        const imagesList = [];
+        doc.clinicPhotos.forEach((image) => {
+          const imageUrl = `${process.env.BASE_URL}/clinicProfile/${image}`;
+          imagesList.push(imageUrl);
+        });
+        doc.clinicPhotos = imagesList;
+      }
+    };
+    // findOne, findAll and update
+    ClinicSchema.post('init', (doc) => {
+      setImageURL(doc);
+    });
+    
+    // create
+    ClinicSchema.post('save', (doc) => {
+      setImageURL(doc);
+    });
 //ClinicSchema.plugin(autoIncrement);
 //ClinicSchema.plugin(autoIncrement, { id: '_id', inc_field: 'clinic_counter' });
 /*ClinicSchema.pre("save", function (next) {
