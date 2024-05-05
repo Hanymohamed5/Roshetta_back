@@ -59,111 +59,128 @@ reviewSchema.pre(/^find/, function(next) {
   next();
 });
 
-
-// calc rating avrage Doctor
-reviewSchema.statics.calcAverageRatings = async function (doctorId) {
+// average for doctors
+reviewSchema.statics.calcAverageRatingsAndQuantity = async function (
+  doctorId
+) {
   const result = await this.aggregate([
-    // Stage 1: Get all reviews in specific doctor
+    // Stage 1 : get all reviews in specific product
     {
-      $match: { doctor: doctorId, }
+      $match: { doctor: doctorId },
     },
-    // Stage 2: Grouping reviews based on doctorId and calc avgratings 
+    // Stage 2: Grouping reviews based on productID and calc avgRatings, ratingsQuantity
     {
       $group: {
         _id: 'doctor',
-        avgRatings: { $avg: "$ratings" },
-      }
+        avgRatings: { $avg: '$ratings' },
+        ratingsQuantity: { $sum: 1 },
+      },
     },
   ]);
+
+  // console.log(result);
   if (result.length > 0) {
     await Doctor.findByIdAndUpdate(doctorId, {
       ratingsAverage: result[0].avgRatings,
-    })
+      ratingsQuantity: result[0].ratingsQuantity,
+    });
   } else {
     await Doctor.findByIdAndUpdate(doctorId, {
       ratingsAverage: 0,
-    })
+      ratingsQuantity: 0,
+    });
   }
 };
-reviewSchema.post("save", async function () {
-  await this.constructor.calcAverageRatings(this.doctor)
+
+reviewSchema.post('save', async function () {
+  await this.constructor.calcAverageRatingsAndQuantity(this.doctor);
 });
 
-reviewSchema.post('deleteOne', async function () {
-  await this.constructor.calcAverageRatings(this.doctor);
+reviewSchema.post('remove', async function () {
+  await this.constructor.calcAverageRatingsAndQuantity(this.doctor);
 });
 
-
-//// calc rating avrage clinic
-reviewSchema.statics.calcAverageRatings = async function (clinicId) {
+// average for clinics
+reviewSchema.statics.calcAverageRatingsAndQuantity = async function (
+  clinicId
+) {
   const result = await this.aggregate([
-    // Stage 1: Get all reviews in specific clinic
+    // Stage 1 : get all reviews in specific product
     {
-      $match: { clinic: clinicId, }
+      $match: { clinic: clinicId },
     },
-    // Stage 2: Grouping reviews based on clinicId and calc avgratings 
+    // Stage 2: Grouping reviews based on productID and calc avgRatings, ratingsQuantity
     {
       $group: {
-        _id: 'Clinic',
-        avgRatings: { $avg: "$ratings" },
-      }
+        _id: 'doctor',
+        avgRatings: { $avg: '$ratings' },
+        ratingsQuantity: { $sum: 1 },
+      },
     },
   ]);
+
+  // console.log(result);
   if (result.length > 0) {
     await Clinic.findByIdAndUpdate(clinicId, {
       ratingsAverage: result[0].avgRatings,
-    })
+      ratingsQuantity: result[0].ratingsQuantity,
+    });
   } else {
     await Clinic.findByIdAndUpdate(clinicId, {
       ratingsAverage: 0,
-    })
+      ratingsQuantity: 0,
+    });
   }
 };
 
-reviewSchema.post("save", async function () {
-  await this.constructor.calcAverageRatings(this.clinic)
+reviewSchema.post('save', async function () {
+  await this.constructor.calcAverageRatingsAndQuantity(this.clinic);
 });
 
-reviewSchema.post('deleteOne', async function () {
-  await this.constructor.calcAverageRatings(this.clinic);
+reviewSchema.post('remove', async function () {
+  await this.constructor.calcAverageRatingsAndQuantity(this.clinic);
 });
 
-
-
-//// calc rating avrage center 
-reviewSchema.statics.calcAverageRatings = async function (centerId) {
+// average for centers
+reviewSchema.statics.calcAverageRatingsAndQuantity = async function (
+  centerId
+) {
   const result = await this.aggregate([
-    // Stage 1: Get all reviews in specific Center
+    // Stage 1 : get all reviews in specific product
     {
-      $match: { center: centerId, }
+      $match: { center: centerId },
     },
-    // Stage 2: Grouping reviews based on centerId and calc avgratings 
+    // Stage 2: Grouping reviews based on productID and calc avgRatings, ratingsQuantity
     {
       $group: {
-        _id: 'Center',
-        avgRatings: { $avg: "$ratings" },
-      }
+        _id: 'doctor',
+        avgRatings: { $avg: '$ratings' },
+        ratingsQuantity: { $sum: 1 },
+      },
     },
   ]);
+
+  // console.log(result);
   if (result.length > 0) {
     await Center.findByIdAndUpdate(centerId, {
       ratingsAverage: result[0].avgRatings,
-    })
+      ratingsQuantity: result[0].ratingsQuantity,
+    });
   } else {
     await Center.findByIdAndUpdate(centerId, {
       ratingsAverage: 0,
-    })
+      ratingsQuantity: 0,
+    });
   }
 };
 
-reviewSchema.post("save", async function () {
-  await this.constructor.calcAverageRatings(this.center)
+reviewSchema.post('save', async function () {
+  await this.constructor.calcAverageRatingsAndQuantity(this.center);
 });
 
-reviewSchema.post('deleteOne', async function () {
-  await this.constructor.calcAverageRatings(this.center);
+reviewSchema.post('remove', async function () {
+  await this.constructor.calcAverageRatingsAndQuantity(this.center);
 });
-
 
 
 const Review = mongoose.model('Review', reviewSchema);
