@@ -29,7 +29,7 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 
 exports.uploadCenterImages = uploadMixOfImages([
   {
-    name: 'imageCover',
+    name: 'logo',
     maxCount: 1,
   },
   {
@@ -41,17 +41,17 @@ exports.uploadCenterImages = uploadMixOfImages([
 exports.resizeCenterImages = asyncHandler(async (req, res, next) => {
   // console.log(req.files);
   //1- Image processing for imageCover
-  if (req.files.imageCover) {
+  if (req.files.logo) {
     const imageCoverFileName = `center-${uuidv4()}-${Date.now()}-cover.jpeg`;
 
-    await sharp(req.files.imageCover[0].buffer)
+    await sharp(req.files.logo[0].buffer)
       .resize(2000, 1333)
       .toFormat('jpeg')
       .jpeg({ quality: 95 })
       .toFile(`uploads/centers/${imageCoverFileName}`);
 
     // Save image into our db
-    req.body.imageCover = imageCoverFileName;
+    req.body.logo = imageCoverFileName;
   }
     //2- Image processing for images
     if (req.files.centerPhotos) {

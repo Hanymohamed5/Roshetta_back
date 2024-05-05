@@ -74,6 +74,30 @@ CenterSchema.virtual('reviews', {
   localField: '_id',
 });
 
+const setImageURL = (doc) => {
+  if (doc.logo) {
+    const imageUrl = `${process.env.BASE_URL}/centers/${doc.logo}`;
+    doc.logo = imageUrl;
+  }
+  if (doc.centerPhotos) {
+    const imagesList = [];
+    doc.centerPhotos.forEach((image) => {
+      const imageUrl = `${process.env.BASE_URL}/centerProfile/${image}`;
+      imagesList.push(imageUrl);
+    });
+    doc.centerPhotos = imagesList;
+  }
+};
+// findOne, findAll and update
+CenterSchema.post('init', (doc) => {
+  setImageURL(doc);
+});
+
+// create
+CenterSchema.post('save', (doc) => {
+  setImageURL(doc);
+});
+
 /*CenterSchema.pre("save", function (next) {
   let doc = this;
   sequencing.getSequenceNextValue("Center_id").
