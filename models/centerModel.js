@@ -28,7 +28,7 @@ const CenterSchema = new mongoose.Schema(
     },
   centerPhotos: [String],
     specilization: {
-      type: [Number],
+      type: [String],
       trim: true,
   },
   price: {

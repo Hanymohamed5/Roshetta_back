@@ -13,7 +13,7 @@ const DoctorSchema = new mongoose.Schema({
         maxlength: [32, 'To long doctor name'],
     },
     specilization: {
-        type: Number,
+        type: String,
         trim: true,
     },
     ratingsAverage: {

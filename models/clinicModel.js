@@ -24,7 +24,7 @@ const ClinicSchema = new mongoose.Schema(
     },
   clinicPhotos: [String],
     specilization: {
-      type: Number,
+      type: String,
       trim: true,
   },
   price: {
