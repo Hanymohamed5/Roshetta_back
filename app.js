@@ -18,6 +18,7 @@ const userRoute = require("./routes/userRoute");
 const reviewRoute = require('./routes/reviewRoutes');
 const bookingRoute = require('./routes/bookingRoute');
 const bookingController = require('./controllers/bookingController');
+const cors = require("cors");
 
 
 // connect with db
@@ -39,6 +40,8 @@ app.post(
   });
 // middlewares
 app.use(express.json());
+app.use(cors());
+app.use(compression());
 
 // Middlewares
 if (process.env.NODE_ENV === 'development') {
@@ -64,7 +67,7 @@ passport.deserializeUser(function (user, done) {
     done(null, user);
 });
 
-app.use(compression());
+
 
 
 // Routes
