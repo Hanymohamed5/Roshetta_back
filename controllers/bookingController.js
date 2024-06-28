@@ -18,7 +18,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         success_url: `${req.protocol}://${req.get('host')}/`,
-        cancel_url: `${req.protocol}://${req.get('host')}/doctor/${doctor.name}`,
+        cancel_url: `${req.protocol}://${req.get('host')}/doctor/${encodeURIComponent(doctor.name)}`,
         client_reference_id: req.params.doctorId,
         line_items: [
             {
@@ -45,14 +45,14 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 
 // check-out for clinic
 exports.getCheckoutClinicSession = catchAsync(async (req, res, next) => {
-    // 1. Get the currently booked doctor
+    // 1. Get the currently booked clinic
     const clinic = await Clinic.findById(req.params.clinicId);
 
     // 2. Create checkout session
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         success_url: `${req.protocol}://${req.get('host')}/`,
-        cancel_url: `${req.protocol}://${req.get('host')}/clinic/${clinic.name}`,
+        cancel_url: `${req.protocol}://${req.get('host')}/clinic/${encodeURIComponent(clinic.name)}`,
         client_reference_id: req.params.clinicId,
         line_items: [
             {
@@ -79,21 +79,21 @@ exports.getCheckoutClinicSession = catchAsync(async (req, res, next) => {
 
 // check-out for center
 exports.getCheckoutCenterSession = catchAsync(async (req, res, next) => {
-    // 1. Get the currently booked doctor
+    // 1. Get the currently booked center
     const center = await Center.findById(req.params.centerId);
 
     // 2. Create checkout session
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         success_url: `${req.protocol}://${req.get('host')}/`,
-        cancel_url: `${req.protocol}://${req.get('host')}/center/${center.name}`,
+        cancel_url: `${req.protocol}://${req.get('host')}/center/${encodeURIComponent(center.name)}`,
         client_reference_id: req.params.centerId,
         line_items: [
             {
                 price_data: {
                     currency: 'egp',
                     product_data: {
-                        name: `${center.name} Clinic`,
+                        name: `${center.name} Center`,
                         description: `${center.bio}`,
                     },
                     unit_amount: center.price * 100, // Convert price to smallest currency unit
@@ -110,6 +110,7 @@ exports.getCheckoutCenterSession = catchAsync(async (req, res, next) => {
         session
     });
 });
+
 
 // create booking for doctor
 const createBookingCheckout = async session => {
