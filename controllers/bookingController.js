@@ -9,7 +9,6 @@ const factory = require('./handlersFactory');
 const AppError = require('./../utils//apiError');
 const expressAsyncHandler = require('express-async-handler');
 
-// check-out for doctor
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     // 1. Get the currently booked doctor
     const doctor = await Doctor.findById(req.params.doctorId);
@@ -36,10 +35,13 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
         mode: 'payment' // Specify the mode as 'payment'
     });
 
-    // 3. Return session as response
+    // 3. Return session as response with only id and url
     res.status(200).json({
         status: 'success',
-        session
+        session: {
+            id: session.id,
+            url: session.url
+        }
     });
 });
 
@@ -73,7 +75,10 @@ exports.getCheckoutClinicSession = catchAsync(async (req, res, next) => {
     // 3. Return session as response
     res.status(200).json({
         status: 'success',
-        session
+        session: {
+            id: session.id,
+            url: session.url
+        }
     });
 });
 
@@ -107,17 +112,19 @@ exports.getCheckoutCenterSession = catchAsync(async (req, res, next) => {
     // 3. Return session as response
     res.status(200).json({
         status: 'success',
-        session
+        session: {
+            id: session.id,
+            url: session.url
+        }
     });
 });
 
 
-// create booking for doctor
 const createBookingCheckout = async session => {
     try {
         const doctorId = session.client_reference_id;
-        const doctor = await Doctor.findById(doctorId);
-        const user = await User.findOne({ email: session.customer_email });
+        const doctor = await Doctor.findById(doctorId).select('name');
+        const user = await User.findOne({ email: session.customer_email }).select('name');
         
         // Check if user exists
         if (!user) {
@@ -125,13 +132,37 @@ const createBookingCheckout = async session => {
         }
 
         const price = session.amount_total / 100; // 'amount_total' contains the total amount in the smallest currency unit
-        await Booking.create({ doctor: doctorId, user: user.id, price });
-        console.log('Booking created:', { doctor: doctorId, user: user.id, price });
+        const date = new Date('2024-07-25');
+        const time = '15:00'; // or '3:00 PM' if you prefer
+
+        const booking = await Booking.create({
+            doctor: doctorId,
+            user: user.id,
+            price,
+            date,
+            time
+        });
+
+        console.log('Booking created:', booking);
+
+        // Constructing response
+        const response = {
+            doctorName: doctor.name,
+            userName: user.name,
+            price: booking.price,
+            paid: booking.paid,
+            id: booking.id,
+            date: booking.date,
+            time: booking.time
+        };
+
+        return response;
     } catch (error) {
         console.error('Error creating booking:', error);
         throw new AppError('Error creating booking', 500);
     }
 };
+
 
 // create booking for clinic
 const createBookingClinicCheckout = async session => {
@@ -226,7 +257,9 @@ exports.getUserBookings = catchAsync(async (req, res, next) => {
 
     const bookings = await Booking.find({ user: userId })
         .skip(skip)
-        .limit(limit);
+        .limit(limit)
+        .populate({ path: 'doctor', select: 'name' })
+        .populate({ path: 'user', select: 'name' });
 
     const totalBookings = await Booking.countDocuments({ user: userId });
 
@@ -234,15 +267,25 @@ exports.getUserBookings = catchAsync(async (req, res, next) => {
         return next(new AppError('No bookings found for this user', 404));
     }
 
+    // Constructing response
+    const formattedBookings = bookings.map(booking => ({
+        doctorName: booking.doctor.name,
+        userName: booking.user.name,
+        price: booking.price,
+        paid: booking.paid,
+        id: booking.id,
+        date: booking.date,
+        time: booking.time
+    }));
+
     res.status(200).json({
         status: 'success',
-        results: bookings.length,
+        results: formattedBookings.length,
         totalBookings,
-        data: {
-            bookings
-        }
+        data: formattedBookings
     });
 });
+
 
 
 exports.createBooking = factory.createOne(Booking);

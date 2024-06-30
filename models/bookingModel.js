@@ -4,17 +4,17 @@ const bookingSchema = new mongoose.Schema({
   doctor: {
     type: mongoose.Schema.ObjectId,
     ref: 'Doctor',
-    //required: [true, 'Booking must belong to a Doctor!']
+    // required: [true, 'Booking must belong to a Doctor!']
   },
   clinic: {
     type: mongoose.Schema.ObjectId,
     ref: 'Clinic',
-    //required: [true, 'Booking must belong to a Doctor!']
+    // required: [true, 'Booking must belong to a Doctor!']
   },
   center: {
     type: mongoose.Schema.ObjectId,
     ref: 'Center',
-    //required: [true, 'Booking must belong to a Doctor!']
+    // required: [true, 'Booking must belong to a Doctor!']
   },
   user: {
     type: mongoose.Schema.ObjectId,
@@ -23,13 +23,21 @@ const bookingSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    require: [true, 'Booking must have a price.']
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now()
+    required: [true, 'Booking must have a price.']
   },
   paid: {
+    type: Boolean,
+    default: true
+  },
+  date: {
+    type: Date,
+    default: new Date('2024-07-25')
+  },
+  time: {
+    type: String,
+    default: '15:00' // or '3:00 PM' if you prefer
+  },
+  isfinish: {
     type: Boolean,
     default: true
   }
@@ -44,8 +52,7 @@ const bookingSchema = new mongoose.Schema({
     }
   },
   toObject: { virtuals: true }
-}
-);
+});
 
 bookingSchema.pre(/^find/, function(next) {
   this.populate('user').populate({
@@ -54,6 +61,7 @@ bookingSchema.pre(/^find/, function(next) {
   });
   next();
 });
+
 bookingSchema.pre(/^find/, function(next) {
   this.populate('user').populate({
     path: 'clinic',
@@ -61,6 +69,7 @@ bookingSchema.pre(/^find/, function(next) {
   });
   next();
 });
+
 bookingSchema.pre(/^find/, function(next) {
   this.populate('user').populate({
     path: 'center',
