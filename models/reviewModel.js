@@ -60,7 +60,7 @@ reviewSchema.pre(/^find/, function(next) {
 });
 
 // average for doctors
-reviewSchema.statics.calcAverageRatingsAndQuantity = async function (
+/*reviewSchema.statics.calcAverageRatingsAndQuantity = async function (
   doctorId
 ) {
   const result = await this.aggregate([
@@ -98,7 +98,7 @@ reviewSchema.post('save', async function () {
 
 reviewSchema.post('remove', async function () {
   await this.constructor.calcAverageRatingsAndQuantity(this.doctor);
-});
+});*/
 
 // average for clinics
 reviewSchema.statics.calcAverageRatingsAndQuantity = async function (
@@ -142,7 +142,7 @@ reviewSchema.post('remove', async function () {
 });
 
 // average for centers
-reviewSchema.statics.calcAverageRatingsAndQuantity = async function (
+/*reviewSchema.statics.calcAverageRatingsAndQuantity = async function (
   centerId
 ) {
   const result = await this.aggregate([
@@ -180,7 +180,7 @@ reviewSchema.post('save', async function () {
 
 reviewSchema.post('remove', async function () {
   await this.constructor.calcAverageRatingsAndQuantity(this.center);
-});
+});*/
 
 
 const Review = mongoose.model('Review', reviewSchema);
