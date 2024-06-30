@@ -275,7 +275,8 @@ exports.getUserBookings = catchAsync(async (req, res, next) => {
         paid: booking.paid,
         id: booking.id,
         date: booking.date,
-        time: booking.time
+        time: booking.time,
+        isfinish: booking.isfinish
     }));
 
     res.status(200).json({
