@@ -39,7 +39,7 @@ const bookingSchema = new mongoose.Schema({
   },
   isfinish: {
     type: Boolean,
-    default: true
+    default: false
   }
 },
 {
